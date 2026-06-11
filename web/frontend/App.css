@@ -1,0 +1,4080 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+
+:root {
+    --bg_primary: #0F0F0F;
+    --bg_secondary: #232D3F;
+    --color_button: #008170;
+    --color_light1: #EBE3D5;
+    --color_light2: #F3EEEA;
+    --color_white: #ffffff;
+    --color_black: #000;
+    --color_red: #f00;
+    --color_coffee: #776B5D;
+    --color_graylight: #F0F0F0;
+    --color_graydark: #A9A9A9;
+}
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+}
+body {
+    width: 100%;
+    height: auto;
+}
+.h1 {
+    font-size: 50px;
+}
+.h2 {
+    font-size: 40px;
+}
+.h3 {
+    font-size: 30px;
+}
+.h4 {
+    font-size: 25px;
+}
+.text-small {
+    font-size: 14px;
+}
+.text-medium {
+    font-size: 16px;
+}
+.text-large {
+    font-size: 18px;
+}
+.text-bold {
+    font-weight: 600;
+}
+a {
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    padding: 20px 0px 0px;
+    color: var(--color_black);
+}
+a > svg {
+    filter: drop-shadow(0px 0px 10px var(--color_graydark));
+}
+a.active {
+    color: var(--color_button);
+}
+.a, .button-primary {
+    background-color: var(--color_button);
+}
+.logo {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+}
+.text-light,
+.text-light > * {
+    color: var(--color_light1);
+}
+.text-light-2,
+.text-light-2 > * {
+    color: var(--color_light2);
+}
+.text-dark,
+.text-dark > * {
+    color: var(--bg_primary);
+}
+.text-dark-2,
+.text-dark-2 > * {
+    color: var(--bg_secondary);
+}
+.text-coffee,
+.text-coffee-2 > * {
+    color: var(--color_coffee)
+}
+.bg-dark {
+    background-color: var(--bg_primary);
+}
+.bg-light {
+    background-color: var(--bg_secondary);
+}
+.main-section {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0px;
+    height: 100vh;
+}
+.home-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.main-section .menu-section {
+    height: 100vh;
+    flex: 0 0 70px;
+    box-shadow: 0px 0px 10px var(--color_graydark);
+    background-color: var(--color_white);
+}
+.main-section .content-section {
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: var(--color_graylight);
+}
+.content-section {
+    min-height: 100vh;
+    background-color: var(--color_graylight);
+}
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+    background: #f4f7f9;
+}
+.app-shell__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.app-shell--lionex .app-shell__content {
+    margin-left: 256px;
+    min-width: 0;
+}
+.navmenu-section {
+    width: 84px;
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+    box-shadow: 2px 0 18px rgba(15, 23, 42, 0.06);
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+}
+.navmenu-section ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+}
+.navmenu-section li {
+    width: 100%;
+}
+.navmenu-section a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    color: #475569;
+    transition: all 0.2s ease;
+}
+.navmenu-section a.active,
+.navmenu-section a:hover {
+    background: #e6fffa;
+    color: #0f172a;
+}
+.topbar-section {
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    border-left: 5px solid var(--color_button);
+    background-color: var(--color_white);
+    box-shadow: 2px 0px 10px var(--color_graydark);
+}
+.topbar-section .logo-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+}
+.logo-block a {
+    text-align: center;
+    padding: 0px 15px;
+}
+.home-input-page {
+    max-width: 480px;
+    padding: 24px;
+}
+.home-link-page {
+    width: 100%;
+    max-width: none;
+    min-height: calc(100vh - 48px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 24px;
+    background-color: #f4f7f9;
+}
+.dashboard-link-card {
+    width: 100%;
+    max-width: 640px;
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+    border: 1px solid #e8ecef;
+}
+.dashboard-link-card__hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    padding: 40px 32px 32px;
+}
+.dashboard-link-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e7f5f1;
+    border: 1px solid #d8f1ea;
+}
+.dashboard-link-title {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: #0f172a;
+}
+.dashboard-link-subtitle {
+    max-width: 520px;
+    color: #475569;
+    font-size: 15px;
+    line-height: 1.7;
+}
+.dashboard-link-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 32px 32px;
+}
+.dashboard-link-info {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: #f8fafc;
+    border: 1px solid #d8e5ec;
+    border-radius: 18px;
+    align-items: flex-start;
+}
+.dashboard-link-info__icon {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #d9f7ec;
+    color: #057a70;
+}
+.dashboard-link-info__heading {
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+.dashboard-link-info__text {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.dashboard-link-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.token-field-wrapper {
+    position: relative;
+}
+.token-field-wrapper input[type="text"],
+.token-field-wrapper input[type="password"],
+.token-field-wrapper input {
+    padding-right: 58px;
+}
+.token-field-eye {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: #475569;
+    cursor: pointer;
+    padding: 0;
+}
+.dashboard-link-actions {
+    margin-top: 6px;
+}
+.dashboard-link-help-text {
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.products-page {
+    padding: 24px;
+}
+.stat-card,
+.details-card {
+    padding: 20px;
+}
+
+.SubmitBtn{
+    margin-top: 10px;
+}
+
+.orders-page {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 24px;
+    min-height: calc(100vh - 64px);
+}
+
+.orders-error-banner {
+    padding: 16px 20px;
+    border-radius: 18px;
+    background: #fef3f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    font-size: 14px;
+}
+
+.orders-sidebar {
+    background: #ffffff;
+    border-radius: 28px;
+    border: 1px solid #e8ebf1;
+    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 24px;
+}
+
+.orders-sidebar__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.orders-sidebar__logo {
+    background: #008170;
+    color: #fff;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.orders-sidebar__brand p {
+    color: #334155;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.orders-sidebar__menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.orders-sidebar__item {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 14px 16px;
+    border-radius: 18px;
+    color: #334155;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.orders-sidebar__item:hover,
+.orders-sidebar__item--active {
+    background: #f1f7f6;
+    color: #0f172a;
+}
+
+.orders-sidebar__footer {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.orders-sidebar__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #0f172a;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+}
+
+.orders-sidebar__username {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.orders-sidebar__role {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.orders-main {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.orders-page-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.orders-page-header h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #0f172a;
+}
+
+.orders-page-description {
+    color: #475569;
+    margin-top: 10px;
+    max-width: 640px;
+}
+
+.orders-page-actions {
+    display: grid;
+    gap: 16px;
+    width: min(100%, 420px);
+}
+
+.orders-action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.orders-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.orders-summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.orders-summary-card__label {
+    color: #64748b;
+}
+
+.orders-table-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.orders-table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.orders-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.orders-tab {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #334155;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.orders-tab--active {
+    background: #008170;
+    color: #fff;
+}
+
+.orders-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.orders-table-scroll {
+    overflow-x: auto;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+.orders-table th,
+.orders-table td {
+    text-align: left;
+    padding: 16px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+    color: #334155;
+}
+
+.orders-table th {
+    color: #475569;
+    font-weight: 700;
+}
+
+.orders-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.orders-table-order {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.orders-table-order__name {
+    font-weight: 700;
+}
+
+.orders-table-order__id {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.status-pill {
+    display: inline-flex;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-pill--success {
+    background: #dcf6ef;
+    color: #047857;
+}
+
+.status-pill--warning {
+    background: #f5f3e8;
+    color: #92400e;
+}
+
+.status-pill--critical {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-pill--neutral {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.orders-table-empty {
+    text-align: center;
+    padding: 32px;
+    color: #64748b;
+}
+
+@media (max-width: 1280px) {
+    .orders-summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .orders-page {
+        padding: 16px;
+    }
+
+    .orders-page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .orders-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .navmenu-section {
+        width: 64px;
+    }
+}
+
+@media (max-width: 960px) {
+    .app-shell--lionex .app-shell__content {
+        margin-left: 0;
+    }
+}
+
+/* Home Dashboard Styles */
+.home-dashboard {
+    padding: 32px;
+    background: #f4f7f9;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.dashboard-header p {
+    color: #475569;
+    margin-top: 8px;
+}
+
+.dashboard-header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.dashboard-export-btn,
+.dashboard-sync-btn {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid #d8e5ec;
+    background: #ffffff;
+    color: #0f172a;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.dashboard-sync-btn {
+    background: #008170;
+    color: #ffffff;
+    border-color: #008170;
+}
+
+.dashboard-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.metric-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #e8ecef;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    position: relative;
+}
+
+.metric-label {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 8px;
+}
+
+.metric-change {
+    color: #047857;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+.metric-icon {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    font-size: 28px;
+    opacity: 0.3;
+}
+
+.dashboard-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.dashboard-section {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid #e8ecef;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.dashboard-section h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.sync-status-section {
+    margin-bottom: 24px;
+}
+
+.sync-header {
+    margin-top: 16px;
+    margin-bottom: 20px;
+}
+
+.sync-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.sync-badge--connected {
+    background: #dcf6ef;
+    color: #047857;
+}
+
+.sync-badge--offline {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.sync-store-info {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.sync-store-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.sync-store-details {
+    flex: 1;
+}
+
+.sync-store-label {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.sync-store-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 4px;
+}
+
+.sync-store-meta {
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.sync-progress {
+    margin-bottom: 20px;
+}
+
+.sync-progress-label {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.sync-progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.sync-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #008170 0%, #06b6d4 100%);
+    border-radius: 4px;
+}
+
+.sync-auto-notice {
+    background: #dcf6ef;
+    border: 1px solid #a7f3d0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: #047857;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.sync-notice-icon {
+    margin-right: 8px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.view-logs {
+    color: #008170;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.activity-item {
+    display: grid;
+    grid-template-columns: 40px 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 16px;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 18px;
+}
+
+.activity-item--success .activity-icon {
+    background: #dcf6ef;
+    color: #047857;
+}
+
+.activity-item--warning .activity-icon {
+    background: #fef3f2;
+    color: #d32f2f;
+}
+
+.activity-details {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 14px;
+}
+
+.activity-description {
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.activity-status {
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.activity-item--success .activity-status {
+    color: #047857;
+}
+
+.activity-item--warning .activity-status {
+    color: #d32f2f;
+}
+
+.activity-time {
+    color: #64748b;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.health-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.health-metric {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.health-metric-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.health-metric-icon--stable {
+    background: #dcf6ef;
+    color: #047857;
+}
+
+.health-metric-icon--matched {
+    background: #dcf6ef;
+    color: #047857;
+}
+
+.health-metric-icon--critical {
+    background: #fef3f2;
+    color: #d32f2f;
+}
+
+.health-metric-info {
+    flex: 1;
+}
+
+.health-metric-label {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.health-metric-status {
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.status--stable {
+    color: #047857;
+}
+
+.status--matched {
+    color: #047857;
+}
+
+.status--critical {
+    color: #d32f2f;
+}
+
+.efficiency-score {
+    text-align: center;
+}
+
+.efficiency-circle {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 16px;
+}
+
+.efficiency-circle svg {
+    width: 100%;
+    height: 100%;
+}
+
+.efficiency-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    font-weight: 700;
+    color: #008170;
+}
+
+.efficiency-label {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.recent-activity-section {
+    margin-bottom: 0;
+}
+
+.logistics-health-section {
+    margin-bottom: 0;
+}
+
+@media (max-width: 1280px) {
+    .dashboard-content {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .activity-item {
+        grid-template-columns: 40px 1fr auto;
+    }
+
+    .activity-time {
+        display: none;
+    }
+}
+
+:root {
+    --lionex-on-tertiary-fixed-variant: #414846;
+    --lionex-secondary-fixed: #a5f2d2;
+    --lionex-background: #f6fafe;
+    --lionex-on-background: #181c1f;
+    --lionex-primary: #00654b;
+    --lionex-secondary-container: #a5f2d2;
+    --lionex-primary-container: #008060;
+    --lionex-on-surface: #181c1f;
+    --lionex-error-container: #ffdad6;
+    --lionex-outline-variant: #bdc9c2;
+    --lionex-surface-container-highest: #dfe3e7;
+    --lionex-surface-container-high: #e5e8ed;
+    --lionex-secondary: #196b52;
+    --lionex-surface-container-lowest: #ffffff;
+    --lionex-on-secondary-container: #217158;
+    --lionex-on-surface-variant: #3e4944;
+    --lionex-error: #ba1a1a;
+    --lionex-surface-container-low: #f1f4f8;
+    --lionex-on-primary: #ffffff;
+    --lionex-outline: #6e7a73;
+    --lionex-surface-container: #ebeef3;
+    --lionex-surface: #f6fafe;
+    --lionex-primary-fixed: #92f6cf;
+}
+
+.lionex-home {
+    min-height: 100vh;
+    display: flex;
+    background: var(--lionex-background);
+    color: var(--lionex-on-surface);
+    font-family: Inter, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.lionex-home * {
+    box-sizing: border-box;
+}
+
+.lionex-home a {
+    text-decoration: none;
+}
+
+.lionex-home button,
+.lionex-home input {
+    font: inherit;
+}
+
+.lionex-home .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.lionex-core-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    width: 256px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    border-right: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-low);
+    color: var(--lionex-on-surface);
+    font-family: Inter, Arial, sans-serif;
+}
+
+.lionex-core-sidebar__brand {
+    margin-bottom: 32px;
+    padding: 0 24px;
+}
+
+.lionex-core-sidebar__brand h1 {
+    margin: 0;
+    color: var(--lionex-primary);
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 700;
+}
+
+.lionex-core-sidebar__brand p {
+    margin: 0;
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+    line-height: 20px;
+    opacity: 0.78;
+}
+
+.lionex-core-sidebar__links {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 12px;
+}
+
+.lionex-core-sidebar__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 4px;
+    padding: 12px 16px;
+    color: var(--lionex-on-surface-variant);
+    transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.lionex-core-sidebar__link:hover {
+    background: var(--lionex-surface-container-high);
+}
+
+.lionex-core-sidebar__link:active {
+    opacity: 0.8;
+}
+
+.lionex-core-sidebar__link--active {
+    background: var(--lionex-secondary-container);
+    color: var(--lionex-on-secondary-container);
+    font-weight: 600;
+}
+
+.lionex-core-sidebar__account {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px 0;
+    border-top: 1px solid var(--lionex-outline-variant);
+}
+
+.lionex-core-sidebar__account > div {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--lionex-primary-container);
+    color: var(--lionex-on-primary-container);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 700;
+}
+
+.lionex-core-sidebar__account p,
+.lionex-core-sidebar__account span {
+    margin: 0;
+}
+
+.lionex-core-sidebar__account p {
+    color: var(--lionex-on-surface);
+    font-size: 13px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.lionex-core-sidebar__account span {
+    color: var(--lionex-on-surface-variant);
+    font-size: 12px;
+}
+
+.lionex-main {
+    margin-left: 256px;
+}
+
+.lionex-sidebar {
+    width: 240px;
+    min-width: 240px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--lionex-surface-container-low);
+    border-right: 1px solid var(--lionex-outline-variant);
+}
+
+.lionex-sidebar__inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+}
+
+.lionex-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 8px 32px;
+}
+
+.lionex-brand__mark {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 4px;
+    background: var(--lionex-primary);
+    color: var(--lionex-on-primary);
+    font-weight: 700;
+}
+
+.lionex-brand h1 {
+    margin: 0;
+    color: var(--lionex-primary);
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 700;
+}
+
+.lionex-brand p {
+    margin: 0;
+    color: var(--lionex-on-surface-variant);
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.lionex-sidebar__nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lionex-sidebar__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    color: var(--lionex-on-surface-variant);
+    font-weight: 400;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.lionex-sidebar__link:hover {
+    background: var(--lionex-surface-container);
+}
+
+.lionex-sidebar__link--active {
+    background: var(--lionex-surface-container-high);
+    color: var(--lionex-on-surface);
+    font-weight: 600;
+}
+
+.lionex-sidebar__link--small {
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+}
+
+.lionex-text-primary {
+    color: var(--lionex-primary);
+}
+
+.lionex-sidebar__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 16px;
+    border-top: 1px solid var(--lionex-outline-variant);
+}
+
+.lionex-upgrade {
+    margin-bottom: 16px;
+    padding: 16px 12px;
+    border-radius: 4px;
+    background: var(--lionex-primary-fixed);
+    color: #002116;
+}
+
+.lionex-upgrade p {
+    margin: 0 0 8px;
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+}
+
+.lionex-upgrade button {
+    width: 100%;
+    border: 0;
+    border-radius: 2px;
+    padding: 6px 12px;
+    background: var(--lionex-primary);
+    color: var(--lionex-on-primary);
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.lionex-main {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.lionex-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    width: 100%;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface);
+}
+
+.lionex-topbar--fixed {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 40;
+    width: calc(100% - 256px);
+}
+
+.lionex-search {
+    position: relative;
+    width: 100%;
+    max-width: 576px;
+    transition: transform 0.2s ease;
+}
+
+.lionex-search--focused {
+    transform: scale(1.02);
+}
+
+.lionex-search .material-symbols-outlined {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--lionex-on-surface-variant);
+    font-size: 20px;
+}
+
+.lionex-search input {
+    width: 100%;
+    min-height: 34px;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 4px;
+    outline: 0;
+    background: var(--lionex-surface-container-low);
+    color: var(--lionex-on-surface);
+    padding: 6px 16px 6px 40px;
+    font-size: 13px;
+    line-height: 18px;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lionex-search input:focus {
+    border-color: var(--lionex-primary);
+    box-shadow: 0 0 0 2px rgba(0, 101, 75, 0.16);
+}
+
+.lionex-topbar__actions,
+.lionex-icon-actions,
+.lionex-page-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.lionex-icon-actions {
+    gap: 8px;
+}
+
+.lionex-icon-button {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    color: var(--lionex-on-surface-variant);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.lionex-icon-button:hover {
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-icon-button--notify > span:last-child {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    border: 2px solid var(--lionex-surface);
+    background: var(--lionex-error);
+}
+
+.lionex-divider {
+    width: 1px;
+    height: 24px;
+    margin: 0 8px;
+    background: var(--lionex-outline-variant);
+}
+
+.lionex-button {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lionex-button .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.lionex-button--primary {
+    background: var(--lionex-primary);
+    color: var(--lionex-on-primary);
+}
+
+.lionex-button--primary:hover {
+    opacity: 0.9;
+    box-shadow: 0 4px 10px rgba(0, 101, 75, 0.16);
+}
+
+.lionex-button--secondary {
+    background: #ffffff;
+    border-color: var(--lionex-outline-variant);
+    color: var(--lionex-on-surface);
+}
+
+.lionex-button--secondary:hover {
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-button:disabled {
+    cursor: default;
+    opacity: 0.82;
+}
+
+.lionex-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.lionex-page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 8px;
+}
+
+.lionex-page-header h2 {
+    margin: 0;
+    color: var(--lionex-on-surface);
+    font-size: 28px;
+    line-height: 32px;
+    font-weight: 600;
+}
+
+.lionex-page-header p {
+    margin: 0;
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.lionex-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.lionex-card {
+    background: #ffffff;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.lionex-metric {
+    min-height: 154px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border 0.2s ease;
+}
+
+.lionex-metric:hover {
+    border-color: var(--lionex-primary);
+}
+
+.lionex-metric__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.lionex-metric__top > span {
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.lionex-metric__icon {
+    padding: 8px;
+    border-radius: 4px;
+    background: var(--lionex-secondary-container);
+    color: var(--lionex-on-secondary-container);
+}
+
+.lionex-metric__value {
+    margin-top: 16px;
+    color: var(--lionex-on-surface);
+    font-size: 28px;
+    line-height: 34px;
+    font-weight: 700;
+}
+
+.lionex-metric__trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    color: var(--lionex-secondary);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.lionex-metric__trend.muted {
+    color: var(--lionex-on-surface-variant);
+}
+
+.lionex-metric__trend .material-symbols-outlined {
+    color: var(--lionex-secondary);
+    font-size: 16px;
+}
+
+.lionex-status-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+    gap: 24px;
+}
+
+.lionex-card__header {
+    min-height: 57px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-lowest);
+}
+
+.lionex-card__header h3 {
+    margin: 0;
+    color: var(--lionex-on-surface);
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 600;
+}
+
+.lionex-connected {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 2px 8px;
+    background: var(--lionex-secondary-container);
+    color: var(--lionex-on-secondary-container);
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+}
+
+.lionex-connected span {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--lionex-secondary);
+    animation: lionex-pulse 1.6s infinite;
+}
+
+.lionex-sync-card {
+    overflow: hidden;
+}
+
+.lionex-sync-card__body,
+.lionex-health__body {
+    padding: 20px;
+}
+
+.lionex-sync-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.lionex-store {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.lionex-store__icon {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    flex: 0 0 96px;
+}
+
+.lionex-store__icon img {
+    width: 96px;
+    height: 96px;
+    display: block;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    object-fit: cover;
+    filter: grayscale(1);
+    opacity: 0.5;
+    background: var(--lionex-surface-container-high);
+}
+
+.lionex-store__icon > div {
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border: 4px solid #ffffff;
+    border-radius: 999px;
+    background: var(--lionex-primary);
+    color: var(--lionex-on-primary);
+}
+
+.lionex-store__icon .material-symbols-outlined {
+    font-size: 16px;
+}
+
+.lionex-store__details {
+    min-width: 0;
+    flex: 1;
+}
+
+.lionex-store__details p {
+    margin: 0 0 8px;
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.lionex-store__details h4 {
+    overflow: hidden;
+    margin: 0 0 8px;
+    color: var(--lionex-on-surface);
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lionex-store__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.lionex-store__meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.lionex-store__meta .material-symbols-outlined {
+    color: var(--lionex-secondary);
+    font-size: 18px;
+}
+
+.lionex-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lionex-progress > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.lionex-progress strong {
+    color: var(--lionex-primary);
+    font-weight: 600;
+}
+
+.lionex-progress__track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--lionex-surface-container-high);
+}
+
+.lionex-progress__track span {
+    display: block;
+    width: 75%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--lionex-primary);
+    transition: width 1s ease;
+}
+
+.lionex-info-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-radius: 4px;
+    padding: 16px;
+    background: var(--lionex-primary-fixed);
+    color: #002116;
+}
+
+.lionex-info-banner > .material-symbols-outlined {
+    color: var(--lionex-primary);
+}
+
+.lionex-info-banner p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 700;
+}
+
+.lionex-info-banner span {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    line-height: 18px;
+    opacity: 0.9;
+}
+
+.lionex-health__body {
+    display: flex;
+    flex-direction: column;
+}
+
+.lionex-health__list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.lionex-health__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.lionex-health__item > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.lionex-health__item span:last-child {
+    color: var(--lionex-on-surface);
+}
+
+.lionex-health__item strong {
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 600;
+}
+
+.lionex-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+}
+
+.lionex-dot--success {
+    background: var(--lionex-secondary);
+}
+
+.lionex-dot--error {
+    background: var(--lionex-error);
+}
+
+.lionex-tone--success {
+    color: var(--lionex-secondary);
+}
+
+.lionex-tone--error {
+    color: var(--lionex-error);
+}
+
+.lionex-efficiency {
+    margin-top: 32px;
+    text-align: center;
+}
+
+.lionex-efficiency__circle {
+    position: relative;
+    width: 112px;
+    height: 112px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--lionex-surface-container);
+}
+
+.lionex-efficiency__circle svg {
+    width: 80px;
+    height: 80px;
+    transform: rotate(-90deg);
+}
+
+.lionex-efficiency__circle circle {
+    fill: transparent;
+    stroke: var(--lionex-surface-container-highest);
+    stroke-width: 6;
+}
+
+.lionex-efficiency__circle circle:last-child {
+    stroke: var(--lionex-primary);
+    stroke-dasharray: 226;
+    stroke-dashoffset: 45;
+}
+
+.lionex-efficiency__circle strong {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 700;
+}
+
+.lionex-efficiency p {
+    margin: 8px 0 0;
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.lionex-activity {
+    overflow: hidden;
+}
+
+.lionex-card__header button {
+    border: 0;
+    background: transparent;
+    color: var(--lionex-primary);
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.lionex-card__header button:hover {
+    text-decoration: underline;
+}
+
+.lionex-activity__list {
+    display: flex;
+    flex-direction: column;
+}
+
+.lionex-activity__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--lionex-outline-variant);
+    transition: background 0.2s ease;
+}
+
+.lionex-activity__item:last-child {
+    border-bottom: 0;
+}
+
+.lionex-activity__item:hover {
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-activity__icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 4px;
+}
+
+.lionex-activity__icon--success {
+    background: var(--lionex-secondary-container);
+    color: var(--lionex-on-secondary-container);
+}
+
+.lionex-activity__icon--error {
+    background: var(--lionex-error-container);
+    color: #93000a;
+}
+
+.lionex-activity__item > div:nth-child(2) {
+    min-width: 0;
+    flex: 1;
+}
+
+.lionex-activity__item p {
+    margin: 0;
+    color: var(--lionex-on-surface);
+    font-weight: 600;
+}
+
+.lionex-activity__item span {
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.lionex-activity__status {
+    min-width: 112px;
+    text-align: right;
+}
+
+.lionex-activity__status strong {
+    display: block;
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 600;
+}
+
+.lionex-footer {
+    margin-top: auto;
+    min-height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 32px;
+    border-top: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface);
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+}
+
+.lionex-footer a {
+    color: var(--lionex-on-surface-variant);
+    transition: color 0.15s ease;
+}
+
+.lionex-footer a:hover {
+    color: var(--lionex-primary);
+}
+
+.lionex-spin {
+    animation: lionex-spin 1s linear infinite;
+}
+
+@keyframes lionex-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes lionex-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.45;
+    }
+}
+
+@media (max-width: 960px) {
+    .lionex-home {
+        display: block;
+    }
+
+    .lionex-sidebar,
+    .lionex-core-sidebar {
+        display: none;
+    }
+
+    .lionex-main {
+        margin-left: 0;
+    }
+
+    .lionex-topbar {
+        height: auto;
+        flex-wrap: wrap;
+        padding: 16px 20px;
+    }
+
+    .lionex-topbar__actions {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .lionex-content {
+        padding: 24px 20px;
+    }
+
+    .lionex-page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .lionex-metrics,
+    .lionex-status-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .lionex-topbar__actions,
+    .lionex-page-header__actions {
+        align-items: stretch;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .lionex-divider,
+    .lionex-icon-actions {
+        display: none;
+    }
+
+    .lionex-button {
+        width: 100%;
+    }
+
+    .lionex-store {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .lionex-activity__item {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .lionex-activity__status {
+        width: 100%;
+        text-align: left;
+        padding-left: 56px;
+    }
+
+    .lionex-footer {
+        flex-wrap: wrap;
+        gap: 14px;
+        padding: 24px 20px;
+    }
+}
+
+.lionex-orders-page {
+    min-height: 100vh;
+    background: var(--lionex-background);
+    color: var(--lionex-on-surface);
+    font-family: Inter, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.lionex-orders-page * {
+    box-sizing: border-box;
+}
+
+.lionex-orders-page a {
+    text-decoration: none;
+}
+
+.lionex-orders-page button,
+.lionex-orders-page input {
+    font: inherit;
+}
+
+.lionex-orders-page .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.lionex-orders-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    width: 256px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    border-right: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-orders-brand {
+    margin-bottom: 32px;
+    padding: 0 24px;
+}
+
+.lionex-orders-brand h1 {
+    margin: 0;
+    color: var(--lionex-primary);
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 700;
+}
+
+.lionex-orders-brand p {
+    margin: 0;
+    color: var(--lionex-on-surface-variant);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.lionex-orders-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lionex-orders-nav__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 8px;
+    padding: 12px 24px;
+    border-radius: 4px;
+    color: var(--lionex-on-surface-variant);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.lionex-orders-nav__link:hover {
+    background: var(--lionex-surface-container-high);
+}
+
+.lionex-orders-nav__link--active {
+    background: var(--lionex-secondary-container);
+    color: var(--lionex-on-secondary-container);
+    font-weight: 600;
+}
+
+.lionex-orders-admin {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    border-top: 1px solid var(--lionex-outline-variant);
+}
+
+.lionex-orders-admin img {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    margin-right: 12px;
+    border-radius: 999px;
+    object-fit: cover;
+}
+
+.lionex-orders-admin span {
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+}
+
+.lionex-orders-topbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 40;
+    width: calc(100% - 256px);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface);
+}
+
+.lionex-orders-topbar__left,
+.lionex-orders-topbar__right {
+    display: flex;
+    align-items: center;
+}
+
+.lionex-orders-topbar__left {
+    flex: 1;
+    min-width: 0;
+}
+
+.lionex-orders-topbar__right {
+    gap: 16px;
+}
+
+.lionex-orders-search {
+    position: relative;
+    width: 100%;
+    max-width: 448px;
+}
+
+.lionex-orders-search .material-symbols-outlined {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--lionex-on-surface-variant);
+}
+
+.lionex-orders-search input {
+    width: 100%;
+    min-height: 40px;
+    border: 0;
+    border-radius: 4px;
+    outline: 0;
+    background: var(--lionex-surface-container);
+    color: var(--lionex-on-surface);
+    padding: 8px 16px 8px 40px;
+}
+
+.lionex-orders-search input:focus {
+    box-shadow: 0 0 0 2px rgba(0, 101, 75, 0.2);
+}
+
+.lionex-orders-topbar__button {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 4px;
+    padding: 8px 16px;
+    background: var(--lionex-surface);
+    color: var(--lionex-on-surface);
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.lionex-orders-topbar__button:hover,
+.lionex-orders-settings:hover,
+.lionex-orders-icon-button:hover {
+    background: var(--lionex-surface-container);
+}
+
+.lionex-orders-topbar__button .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.lionex-orders-icon-button,
+.lionex-orders-settings {
+    border: 0;
+    background: transparent;
+    color: var(--lionex-on-surface-variant);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.lionex-orders-icon-button {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 4px;
+}
+
+.lionex-orders-settings {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 4px;
+    padding: 8px;
+    color: var(--lionex-on-surface);
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+}
+
+.lionex-orders-divider {
+    width: 1px;
+    height: 32px;
+    margin: 0 8px;
+    background: var(--lionex-outline-variant);
+}
+
+.lionex-orders-main {
+    min-height: calc(100vh - 64px);
+    margin-left: 256px;
+    padding: 96px 32px 32px;
+}
+
+.lionex-orders-content {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.lionex-orders-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.lionex-orders-header h2 {
+    margin: 0;
+    color: var(--lionex-on-surface);
+    font-size: 28px;
+    line-height: 32px;
+    font-weight: 600;
+}
+
+.lionex-orders-header > div {
+    display: flex;
+    gap: 12px;
+}
+
+.lionex-orders-button {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.lionex-orders-button .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.lionex-orders-button--secondary {
+    border: 1px solid var(--lionex-outline-variant);
+    background: transparent;
+    color: var(--lionex-on-surface);
+}
+
+.lionex-orders-button--secondary:hover {
+    background: var(--lionex-surface-container);
+}
+
+.lionex-orders-button--primary {
+    border: 1px solid var(--lionex-primary);
+    background: var(--lionex-primary);
+    color: var(--lionex-on-primary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.lionex-orders-button--primary:hover {
+    opacity: 0.9;
+}
+
+.lionex-orders-error {
+    border: 1px solid var(--lionex-error-container);
+    border-radius: 8px;
+    padding: 12px 16px;
+    background: #fff7f6;
+    color: var(--lionex-error);
+    font-size: 13px;
+}
+
+.lionex-orders-table-card {
+    overflow: hidden;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    background: var(--lionex-surface-container-lowest);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.lionex-orders-tabsbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-lowest);
+}
+
+.lionex-orders-tabs {
+    display: flex;
+    overflow-x: auto;
+}
+
+.lionex-orders-tab {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--lionex-on-surface-variant);
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.lionex-orders-tab:hover {
+    color: var(--lionex-on-surface);
+}
+
+.lionex-orders-tab--active {
+    border-bottom-color: var(--lionex-primary-container);
+    color: var(--lionex-primary-container);
+    font-weight: 600;
+}
+
+.lionex-orders-table-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 8px;
+}
+
+.lionex-orders-table-actions button {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--lionex-on-surface-variant);
+    cursor: pointer;
+}
+
+.lionex-orders-table-actions button:hover {
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-orders-table-scroll {
+    overflow-x: auto;
+}
+
+.lionex-orders-table {
+    width: 100%;
+    min-width: 960px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.lionex-orders-table thead {
+    border-bottom: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-orders-table th,
+.lionex-orders-table td {
+    padding: 16px;
+    vertical-align: middle;
+}
+
+.lionex-orders-table th {
+    color: var(--lionex-on-surface-variant);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.lionex-orders-table th:first-child,
+.lionex-orders-table td:first-child {
+    width: 48px;
+}
+
+.lionex-orders-table th:last-child,
+.lionex-orders-table td:last-child {
+    text-align: right;
+}
+
+.lionex-orders-table tbody tr {
+    border-bottom: 1px solid rgba(189, 201, 194, 0.3);
+    transition: background 0.2s ease;
+}
+
+.lionex-orders-table tbody tr:last-child {
+    border-bottom: 0;
+}
+
+.lionex-orders-table tbody tr:hover {
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-orders-table td {
+    color: var(--lionex-on-surface-variant);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.lionex-orders-table input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--lionex-primary);
+}
+
+.lionex-orders-order-link {
+    color: var(--lionex-primary) !important;
+    font-size: 13px !important;
+    line-height: 16px !important;
+    font-weight: 600;
+}
+
+.lionex-orders-customer {
+    color: var(--lionex-on-surface) !important;
+}
+
+.lionex-orders-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.lionex-orders-pill--paid {
+    background: var(--lionex-secondary-container);
+    color: var(--lionex-on-secondary-container);
+}
+
+.lionex-orders-pill--pending {
+    background: var(--lionex-tertiary-fixed, #dde4e1);
+    color: var(--lionex-on-tertiary-fixed-variant);
+}
+
+.lionex-orders-pill--error {
+    background: var(--lionex-error-container);
+    color: #93000a;
+}
+
+.lionex-orders-pill--fulfilled {
+    background: rgba(0, 128, 96, 0.2);
+    color: var(--lionex-primary-container);
+}
+
+.lionex-orders-pill--partial {
+    background: var(--lionex-secondary-fixed);
+    color: var(--lionex-on-secondary-container);
+}
+
+.lionex-orders-pill--neutral {
+    background: var(--lionex-surface-container-highest);
+    color: var(--lionex-on-surface-variant);
+}
+
+.lionex-orders-empty {
+    padding: 36px 16px !important;
+    text-align: center !important;
+    color: var(--lionex-on-surface-variant) !important;
+}
+
+.lionex-orders-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-orders-pagination p {
+    margin: 0;
+    color: var(--lionex-on-surface-variant);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+}
+
+.lionex-orders-pagination > div {
+    display: flex;
+    gap: 8px;
+}
+
+.lionex-orders-pagination button {
+    min-width: 42px;
+    min-height: 30px;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 2px;
+    display: grid;
+    place-items: center;
+    background: var(--lionex-surface);
+    color: var(--lionex-on-surface);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.lionex-orders-pagination button:hover:not(:disabled) {
+    background: var(--lionex-surface-container-highest);
+}
+
+.lionex-orders-pagination button:disabled {
+    cursor: not-allowed;
+    background: var(--lionex-surface-container-lowest);
+    color: var(--lionex-on-surface-variant);
+    opacity: 0.65;
+}
+
+.lionex-orders-pagination .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.lionex-orders-footer {
+    width: 100%;
+    margin-left: 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-orders-footer > div {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+    padding-left: 288px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.lionex-orders-footer p {
+    margin: 0;
+    color: var(--lionex-on-tertiary-fixed-variant);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+}
+
+.lionex-orders-footer nav {
+    display: flex;
+    gap: 24px;
+}
+
+.lionex-orders-footer a {
+    color: var(--lionex-on-tertiary-fixed-variant);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+.lionex-orders-footer a:hover {
+    color: var(--lionex-primary);
+}
+
+@media (max-width: 960px) {
+    .lionex-orders-sidebar {
+        display: none;
+    }
+
+    .lionex-orders-topbar {
+        width: 100%;
+        height: auto;
+        min-height: 64px;
+        align-items: stretch;
+        flex-direction: column;
+        padding: 12px 20px;
+    }
+
+    .lionex-orders-topbar__left,
+    .lionex-orders-topbar__right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .lionex-orders-main {
+        margin-left: 0;
+        padding: 136px 20px 24px;
+    }
+
+    .lionex-orders-footer > div {
+        padding-left: 32px;
+    }
+}
+
+@media (max-width: 640px) {
+    .lionex-orders-topbar__left,
+    .lionex-orders-topbar__right,
+    .lionex-orders-header,
+    .lionex-orders-tabsbar,
+    .lionex-orders-pagination,
+    .lionex-orders-footer > div {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .lionex-orders-topbar__button {
+        justify-content: center;
+        margin-left: 0;
+    }
+
+    .lionex-orders-divider {
+        display: none;
+    }
+
+    .lionex-orders-header > div,
+    .lionex-orders-footer nav {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .lionex-orders-button {
+        width: 100%;
+    }
+
+    .lionex-orders-table-actions {
+        justify-content: flex-end;
+        padding-right: 0;
+    }
+
+    .lionex-orders-footer > div {
+        padding: 0 20px;
+    }
+}
+
+.lionex-screen {
+    min-height: 100vh;
+    background: var(--lionex-background);
+    color: var(--lionex-on-surface);
+    font-family: Inter, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.lionex-screen * {
+    box-sizing: border-box;
+}
+
+.lionex-screen a {
+    text-decoration: none;
+}
+
+.lionex-screen button,
+.lionex-screen input {
+    font: inherit;
+}
+
+.lionex-screen .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    line-height: 1;
+}
+
+.lionex-screen-topbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 40;
+    width: calc(100% - 256px);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface);
+}
+
+.lionex-screen-search {
+    position: relative;
+    width: 100%;
+    max-width: 448px;
+}
+
+.lionex-screen-search .material-symbols-outlined {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--lionex-on-surface-variant);
+    font-size: 20px;
+}
+
+.lionex-screen-search input {
+    width: 100%;
+    min-height: 40px;
+    border: 0;
+    border-radius: 8px;
+    outline: 0;
+    background: var(--lionex-surface-container-low);
+    color: var(--lionex-on-surface);
+    padding: 8px 16px 8px 40px;
+}
+
+.lionex-screen-search input:focus {
+    box-shadow: 0 0 0 2px rgba(0, 101, 75, 0.18);
+}
+
+.lionex-screen-topbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.lionex-screen-topbar__actions button {
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--lionex-on-surface-variant);
+    padding: 8px;
+    cursor: pointer;
+}
+
+.lionex-screen-topbar__actions button:hover {
+    background: var(--lionex-surface-container);
+}
+
+.lionex-screen-topbar__actions > div {
+    width: 1px;
+    height: 32px;
+    margin: 0 8px;
+    background: var(--lionex-outline-variant);
+}
+
+.lionex-screen-topbar__actions .lionex-screen-settings {
+    color: var(--lionex-primary);
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 700;
+    padding: 8px 16px;
+}
+
+.lionex-screen-main {
+    margin-left: 256px;
+    min-height: 100vh;
+    padding: 96px 32px 48px;
+}
+
+.lionex-screen-main > section,
+.lionex-config-header,
+.lionex-config-grid,
+.lionex-policy-grid,
+.lionex-privacy-header {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.lionex-sync-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+    gap: 24px;
+}
+
+.lionex-sync-hero,
+.lionex-next-sync,
+.lionex-log-card,
+.lionex-config-card,
+.lionex-policy-section,
+.lionex-policy-grid aside > section {
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    background: var(--lionex-surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.lionex-sync-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+}
+
+.lionex-sync-hero__watermark {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    color: var(--lionex-on-surface);
+    font-size: 120px;
+    opacity: 0.05;
+}
+
+.lionex-pulse {
+    position: relative;
+    display: inline-flex;
+    width: 12px;
+    height: 12px;
+    margin-right: 12px;
+}
+
+.lionex-pulse::before,
+.lionex-pulse::after {
+    position: absolute;
+    content: "";
+    border-radius: 999px;
+    background: var(--lionex-primary-container);
+}
+
+.lionex-pulse::before {
+    width: 24px;
+    height: 24px;
+    left: -6px;
+    top: -6px;
+    animation: lionex-pulse-ring 2s infinite;
+}
+
+.lionex-pulse::after {
+    width: 8px;
+    height: 8px;
+    left: 2px;
+    top: 2px;
+    animation: lionex-pulse-dot 2s infinite;
+}
+
+.lionex-sync-hero > span {
+    color: var(--lionex-primary);
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.lionex-sync-hero h2 {
+    margin: 16px 0 8px;
+    color: var(--lionex-on-surface);
+    font-size: 40px;
+    line-height: 48px;
+    font-weight: 700;
+}
+
+.lionex-sync-hero p {
+    max-width: 540px;
+    margin: 0 0 24px;
+    color: var(--lionex-on-surface-variant);
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.lionex-sync-hero > div:last-child {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.lionex-sync-hero button,
+.lionex-next-sync button {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    border: 1px solid var(--lionex-outline-variant);
+    padding: 12px 24px;
+    background: #ffffff;
+    color: var(--lionex-on-surface);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lionex-sync-hero button:first-child {
+    border-color: var(--lionex-primary-container);
+    background: var(--lionex-primary-container);
+    color: var(--lionex-on-primary-container);
+}
+
+.lionex-next-sync {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.lionex-next-sync > div:first-child,
+.lionex-next-sync footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.lionex-next-sync > div:first-child span {
+    color: var(--lionex-on-surface-variant);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.lionex-next-sync h3 {
+    margin: 24px 0 4px;
+    font-size: 32px;
+    line-height: 40px;
+    font-weight: 700;
+}
+
+.lionex-next-sync p {
+    margin: 0;
+    color: var(--lionex-on-surface-variant);
+    font-size: 12px;
+}
+
+.lionex-next-sync__bar {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    margin: 24px 0 8px;
+    background: var(--lionex-surface-container-high);
+}
+
+.lionex-next-sync__bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--lionex-primary-container);
+    transition: width 1s ease;
+}
+
+.lionex-next-sync footer {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.lionex-next-sync footer strong {
+    color: var(--lionex-primary);
+}
+
+.lionex-log-card {
+    overflow: hidden;
+    margin-top: 24px;
+}
+
+.lionex-log-card > header,
+.lionex-config-card > header,
+.lionex-policy-section > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-log-card h3,
+.lionex-config-card h3,
+.lionex-policy-section h3 {
+    margin: 0;
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 600;
+}
+
+.lionex-log-card p,
+.lionex-config-card p {
+    margin: 0;
+    color: var(--lionex-on-surface-variant);
+    font-size: 12px;
+}
+
+.lionex-log-card header > div:last-child {
+    display: flex;
+    gap: 8px;
+}
+
+.lionex-log-card header button,
+.lionex-log-table button {
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--lionex-primary);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lionex-log-table-wrap {
+    overflow-x: auto;
+}
+
+.lionex-log-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+}
+
+.lionex-log-table th,
+.lionex-log-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(189, 201, 194, 0.3);
+    text-align: left;
+}
+
+.lionex-log-table th {
+    color: var(--lionex-on-surface-variant);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.lionex-log-table td:first-child {
+    color: var(--lionex-on-surface);
+    font-weight: 500;
+}
+
+.lionex-log-table td:nth-child(3) {
+    color: var(--lionex-on-surface-variant);
+}
+
+.lionex-log-table td span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lionex-log-table strong {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 4px 12px;
+    background: rgba(165, 242, 210, 0.3);
+    color: var(--lionex-on-secondary-container);
+    font-size: 12px;
+}
+
+.lionex-log-table strong.error {
+    background: var(--lionex-error-container);
+    color: var(--lionex-on-error-container);
+}
+
+.lionex-log-table tr.warning {
+    background: rgba(255, 218, 214, 0.2);
+}
+
+.lionex-log-table td:last-child {
+    text-align: right;
+}
+
+.lionex-log-table button {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.lionex-log-table tr:hover {
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-log-table tr:hover button {
+    opacity: 1;
+}
+
+.lionex-log-card > footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-lowest);
+}
+
+.lionex-log-card footer nav {
+    display: flex;
+    gap: 8px;
+}
+
+.lionex-log-card footer button {
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 2px;
+    background: transparent;
+    padding: 4px 12px;
+}
+
+.lionex-log-card footer button:nth-child(2) {
+    background: var(--lionex-primary-container);
+    color: var(--lionex-on-primary-container);
+    font-weight: 700;
+}
+
+.lionex-image-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.lionex-image-grid article,
+.lionex-config-image {
+    position: relative;
+    overflow: hidden;
+    min-height: 256px;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+}
+
+.lionex-image-grid img,
+.lionex-config-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+}
+
+.lionex-image-grid article:hover img {
+    transform: scale(1.1);
+}
+
+.lionex-image-grid article > div,
+.lionex-config-image > div {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px;
+    background: linear-gradient(to top, rgba(0, 101, 75, 0.84), transparent);
+    color: var(--lionex-on-primary);
+}
+
+.lionex-image-grid h4,
+.lionex-config-image h4 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 600;
+}
+
+.lionex-image-grid p,
+.lionex-config-image p {
+    margin: 0;
+    opacity: 0.85;
+}
+
+.lionex-config-main {
+    max-width: none;
+}
+
+.lionex-config-header {
+    max-width: 1024px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+}
+
+.lionex-config-header h2,
+.lionex-privacy-header h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 32px;
+    font-weight: 600;
+}
+
+.lionex-config-header p,
+.lionex-privacy-header p {
+    margin: 4px 0 0;
+    color: var(--lionex-on-surface-variant);
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.lionex-config-header > div:last-child {
+    display: flex;
+    gap: 12px;
+}
+
+.lionex-config-header button,
+.lionex-config-image button {
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--lionex-on-surface);
+    font-weight: 500;
+}
+
+.lionex-config-header button:last-child {
+    border-color: var(--lionex-primary);
+    background: var(--lionex-primary);
+    color: var(--lionex-on-primary);
+}
+
+.lionex-config-grid {
+    max-width: 1024px;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.lionex-config-card {
+    grid-column: span 12;
+    overflow: hidden;
+    background: var(--lionex-surface-container-lowest);
+}
+
+.lionex-config-card.prefs {
+    grid-column: span 7;
+}
+
+.lionex-config-card.notifications {
+    grid-column: span 5;
+}
+
+.lionex-config-card > header {
+    padding: 24px;
+}
+
+.lionex-config-card > header > div {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--lionex-primary-container);
+    color: var(--lionex-on-primary-container);
+}
+
+.lionex-config-card header section {
+    flex: 1;
+}
+
+.lionex-config-card header strong {
+    border-radius: 999px;
+    padding: 4px 12px;
+    background: var(--lionex-secondary-container);
+    color: var(--lionex-on-secondary-container);
+    font-size: 12px;
+}
+
+.lionex-config-card > main,
+.lionex-config-card > footer {
+    padding: 24px;
+}
+
+.lionex-api-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px;
+}
+
+.lionex-api-fields label,
+.lionex-config-card main {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lionex-api-fields label > span {
+    color: var(--lionex-on-surface-variant);
+    font-weight: 500;
+}
+
+.lionex-api-fields label > div {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    background: var(--lionex-surface-container);
+}
+
+.lionex-api-fields code,
+.lionex-api-fields input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    padding: 8px 16px;
+}
+
+.lionex-api-fields code {
+    filter: blur(4px);
+    transition: filter 0.3s ease;
+    user-select: none;
+}
+
+.lionex-api-fields code:hover {
+    filter: blur(0);
+}
+
+.lionex-api-fields button {
+    border: 0;
+    border-left: 1px solid var(--lionex-outline-variant);
+    background: transparent;
+    padding: 8px 16px;
+}
+
+.lionex-config-card > footer {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--lionex-outline-variant);
+}
+
+.lionex-config-card > footer button {
+    border: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    color: var(--lionex-primary);
+    font-weight: 500;
+}
+
+.lionex-frequency-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+}
+
+.lionex-frequency-grid button {
+    position: relative;
+    min-height: 126px;
+    border: 2px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: transparent;
+    color: var(--lionex-on-surface);
+}
+
+.lionex-frequency-grid button.active {
+    border-color: var(--lionex-primary);
+    background: rgba(165, 242, 210, 0.2);
+}
+
+.lionex-frequency-grid button > .material-symbols-outlined:first-child {
+    color: var(--lionex-primary);
+}
+
+.lionex-frequency-grid button > .material-symbols-outlined:last-child {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: var(--lionex-primary);
+    font-size: 16px;
+}
+
+.lionex-frequency-grid span {
+    color: var(--lionex-on-surface-variant);
+    font-size: 10px;
+}
+
+.lionex-config-card aside {
+    display: flex;
+    gap: 12px;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    padding: 16px;
+    background: var(--lionex-surface-container-low);
+    color: var(--lionex-on-surface-variant);
+    font-size: 12px;
+}
+
+.lionex-toggle-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.lionex-toggle-row strong,
+.lionex-toggle-row small {
+    display: block;
+}
+
+.lionex-toggle-row small {
+    color: var(--lionex-on-surface-variant);
+}
+
+.lionex-toggle-row input {
+    position: absolute;
+    opacity: 0;
+}
+
+.lionex-toggle-row i {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex: 0 0 44px;
+    border-radius: 999px;
+    background: var(--lionex-surface-container-highest);
+    transition: background 0.2s ease;
+}
+
+.lionex-toggle-row i::before {
+    position: absolute;
+    content: "";
+    width: 20px;
+    height: 20px;
+    left: 2px;
+    top: 2px;
+    border-radius: 999px;
+    background: #ffffff;
+    transition: transform 0.2s ease;
+}
+
+.lionex-toggle-row input:checked + i,
+.lionex-toggle-row input:checked ~ i {
+    background: var(--lionex-primary-container);
+}
+
+.lionex-toggle-row input:checked ~ i::before {
+    transform: translateX(20px);
+}
+
+.lionex-rules > div {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    padding: 16px;
+    transition: border 0.2s ease;
+}
+
+.lionex-rules > div:hover {
+    border-color: var(--lionex-primary);
+}
+
+.lionex-rules > div > .material-symbols-outlined {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--lionex-secondary-container);
+    color: var(--lionex-primary);
+}
+
+.lionex-rules section {
+    flex: 1;
+}
+
+.lionex-rules section strong,
+.lionex-rules section span {
+    display: block;
+}
+
+.lionex-rules section span {
+    color: var(--lionex-on-surface-variant);
+    font-size: 12px;
+}
+
+.lionex-rules em {
+    color: var(--lionex-primary);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.lionex-rules button {
+    border: 0;
+    background: transparent;
+    color: var(--lionex-on-surface-variant);
+}
+
+.lionex-rules > button {
+    width: fit-content;
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--lionex-surface-container);
+    color: var(--lionex-on-surface);
+    font-weight: 500;
+}
+
+.lionex-config-image {
+    grid-column: span 12;
+}
+
+.lionex-config-image > div {
+    align-items: flex-start;
+    justify-content: center;
+    max-width: none;
+    background: linear-gradient(to right, rgba(0, 101, 75, 0.9), transparent);
+}
+
+.lionex-config-image p {
+    max-width: 440px;
+    margin-bottom: 16px;
+}
+
+.lionex-config-image button {
+    border-color: var(--lionex-on-primary);
+    background: var(--lionex-on-primary);
+    color: var(--lionex-primary);
+    font-weight: 700;
+}
+
+.lionex-privacy-screen {
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-privacy-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.lionex-privacy-header a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    width: fit-content;
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+}
+
+.lionex-policy-grid {
+    display: grid;
+    grid-template-columns: minmax(260px, 4fr) minmax(0, 8fr);
+    gap: 24px;
+}
+
+.lionex-policy-grid > aside {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lionex-policy-grid aside > section {
+    padding: 20px;
+    background: #ffffff;
+}
+
+.lionex-policy-grid aside > section:first-child {
+    position: sticky;
+    top: 84px;
+}
+
+.lionex-policy-grid aside h2 {
+    margin: 0 0 16px;
+    font-size: 20px;
+}
+
+.lionex-policy-grid aside a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: var(--lionex-on-surface-variant);
+}
+
+.lionex-policy-grid aside a:first-of-type {
+    background: var(--lionex-secondary-container);
+    color: var(--lionex-primary);
+    font-weight: 500;
+}
+
+.lionex-policy-grid aside > section:last-child {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--lionex-on-tertiary-container);
+}
+
+.lionex-policy-grid aside h3 {
+    margin: 0;
+    color: var(--lionex-primary);
+    font-size: 20px;
+}
+
+.lionex-policy-grid aside p {
+    margin: 4px 0 8px;
+    color: var(--lionex-on-surface-variant);
+    font-size: 13px;
+}
+
+.lionex-policy-grid > div {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.lionex-policy-section {
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.lionex-policy-section > header {
+    background: var(--lionex-surface-bright);
+}
+
+.lionex-policy-section > main {
+    padding: 20px;
+}
+
+.lionex-policy-section p {
+    color: var(--lionex-on-surface-variant);
+    line-height: 1.7;
+}
+
+.lionex-policy-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.lionex-policy-cards article {
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    padding: 16px;
+    background: var(--lionex-surface-container-lowest);
+}
+
+.lionex-policy-cards .material-symbols-outlined,
+.lionex-policy-feature .material-symbols-outlined {
+    color: var(--lionex-primary);
+}
+
+.lionex-policy-cards h4,
+.lionex-policy-feature h4 {
+    margin: 8px 0 4px;
+}
+
+.lionex-policy-section figure {
+    position: relative;
+    overflow: hidden;
+    height: 192px;
+    border-radius: 8px;
+    margin: 16px 0;
+}
+
+.lionex-policy-section figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1);
+    transition: filter 0.7s ease;
+}
+
+.lionex-policy-section figure:hover img {
+    filter: grayscale(0);
+}
+
+.lionex-policy-section figcaption {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0, 101, 75, 0.65), transparent);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.lionex-policy-feature {
+    display: flex;
+    gap: 16px;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.lionex-policy-feature:hover {
+    background: var(--lionex-surface-container-low);
+}
+
+.lionex-policy-feature .material-symbols-outlined {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--lionex-primary-container);
+    color: var(--lionex-on-primary);
+}
+
+.lionex-rights {
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.lionex-rights span {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-lowest);
+    font-weight: 500;
+}
+
+.lionex-rights span:last-child {
+    border-bottom: 0;
+}
+
+.lionex-rights strong {
+    border-radius: 4px;
+    padding: 2px 8px;
+    background: rgba(0, 101, 75, 0.1);
+    color: var(--lionex-primary);
+    font-size: 12px;
+}
+
+.lionex-policy-section button {
+    border: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    background: transparent;
+    color: var(--lionex-primary);
+    font-weight: 500;
+}
+
+.lionex-screen-footer {
+    margin-left: 256px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    border-top: 1px solid var(--lionex-outline-variant);
+    background: var(--lionex-surface-container-low);
+    padding: 16px 32px;
+}
+
+.lionex-screen-footer p {
+    margin: 0;
+    color: var(--lionex-on-tertiary-fixed-variant);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.lionex-screen-footer nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.lionex-screen-footer a {
+    color: var(--lionex-on-tertiary-fixed-variant);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.lionex-screen-footer a:hover {
+    color: var(--lionex-primary);
+}
+
+@keyframes lionex-pulse-ring {
+    0% {
+        transform: scale(0.33);
+        opacity: 1;
+    }
+    80%,
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes lionex-pulse-dot {
+    0%,
+    100% {
+        transform: scale(0.8);
+    }
+    50% {
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 960px) {
+    .lionex-screen-topbar,
+    .lionex-screen-footer {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .lionex-screen-main {
+        margin-left: 0;
+    }
+
+    .lionex-sync-hero-grid,
+    .lionex-image-grid,
+    .lionex-policy-grid,
+    .lionex-policy-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .lionex-config-card.prefs,
+    .lionex-config-card.notifications {
+        grid-column: span 12;
+    }
+}
+
+@media (max-width: 640px) {
+    .lionex-screen-topbar,
+    .lionex-screen-topbar__actions,
+    .lionex-config-header,
+    .lionex-log-card > footer,
+    .lionex-screen-footer {
+        align-items: stretch;
+        flex-direction: column;
+        height: auto;
+    }
+
+    .lionex-screen-topbar {
+        padding: 12px 20px;
+    }
+
+    .lionex-screen-main {
+        padding: 150px 20px 32px;
+    }
+
+    .lionex-screen-topbar__actions > div {
+        display: none;
+    }
+
+    .lionex-frequency-grid,
+    .lionex-api-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .lionex-config-header > div:last-child {
+        flex-direction: column;
+    }
+
+    .lionex-log-card footer nav {
+        flex-wrap: wrap;
+    }
+}
