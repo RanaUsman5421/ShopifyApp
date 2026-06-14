@@ -3,6 +3,9 @@ import "dotenv/config";
 import { join } from "path";
 import { readFileSync } from "fs";
 import crypto from "crypto";
+if (typeof globalThis.crypto === "undefined") {
+  globalThis.crypto = crypto;
+}
 import http from "http";
 import https from "https";
 import express from "express";
