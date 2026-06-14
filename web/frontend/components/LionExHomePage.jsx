@@ -2,6 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import LionExSideNav from "./LionExSideNav";
 import LionExTopBar, { MaterialIcon, SyncButton } from "./LionExTopBar";
 import { useAuthenticatedFetch } from "../hooks/useAuthenticatedFetch";
+import { formatNextSyncTime } from "./LionExStatusPages";
+import { ORDER_SYNC_COMPLETED_EVENT } from "../utils/orderSync";
+
+const DASHBOARD_REFRESH_INTERVAL_MS = 30000;
 
 async function readOptionalJsonResponse(response, fallbackValue) {
   const data = await response.json().catch(() => null);
@@ -71,37 +75,37 @@ function formatMetricValue(value, isLoading) {
   return Number(value || 0).toLocaleString();
 }
 
+function formatSyncEventTime(dateString) {
+  if (!dateString) {
+    return "Unavailable";
+  }
+
+  const date = new Date(dateString);
+
+  return date.toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatSyncInterval(intervalMs) {
+  if (!Number.isFinite(intervalMs) || intervalMs <= 0) {
+    return "Unknown interval";
+  }
+
+  return `${Math.round(intervalMs / 60000)} minutes`;
+}
+
+function formatOrderCount(count) {
+  return `${Number.isFinite(count) ? count : 0} order${count === 1 ? "" : "s"}`;
+}
+
 const healthItems = [
   { label: "API Connection", status: "STABLE", tone: "success" },
-  { label: "Stock Matching", status: "MATCHED", tone: "success" },
-  { label: "Order Latency", status: "HIGH (+12m)", tone: "error" },
-];
-
-const activityItems = [
-  {
-    icon: "sync_alt",
-    title: "Inventory Level Update",
-    detail: "Product: Blue Denim Jacket (Large)",
-    status: "Success",
-    time: "2 minutes ago",
-    tone: "success",
-  },
-  {
-    icon: "local_mall",
-    title: "Order #1092 Transferred",
-    detail: "Destination: US Warehouse",
-    status: "Success",
-    time: "15 minutes ago",
-    tone: "success",
-  },
-  {
-    icon: "report",
-    title: "Stock Conflict Detected",
-    detail: "Product: Silk Scarf (Red)",
-    status: "Warning",
-    time: "1 hour ago",
-    tone: "error",
-  },
+  { label: "Orders Syncing", status: "SYNCED", tone: "success" },
+  { label: "Order Processing", status: " ON ", tone: "success" },
 ];
 
 export default function LionExHomePage() {
@@ -113,6 +117,11 @@ export default function LionExHomePage() {
     storeName: "",
     isLoading: true,
   });
+  const [nextSyncTime, setNextSyncTime] = useState("Loading...");
+  const [lastOrdersSyncTime, setLastOrdersSyncTime] = useState("Unavailable");
+  const [syncInterval, setSyncInterval] = useState("Unknown interval");
+  const [ordersFetchedCount, setOrdersFetchedCount] = useState(0);
+  const [ordersSavedLastSync, setOrdersSavedLastSync] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -186,11 +195,27 @@ export default function LionExHomePage() {
               : 0;
             savedOrders = storedOrdersCount || savedOrders;
           }
-        }
+        } 
+
+        const syncStatusResponse = await fetchOptionalJson(
+          authenticatedFetch,
+          "/api/orders/sync-status",
+          { success: true, data: {} }
+        );
+        const nextRunAt = syncStatusResponse?.data?.nextRunAt;
+        const lastRunAt = syncStatusResponse?.data?.lastRunAt;
+        const intervalMs = syncStatusResponse?.data?.intervalMs;
+        const nextSyncDisplay = formatNextSyncTime(nextRunAt);
 
         if (!isMounted) {
           return;
         }
+
+        setNextSyncTime(nextSyncDisplay);
+        setLastOrdersSyncTime(formatSyncEventTime(lastRunAt));
+        setSyncInterval(formatSyncInterval(intervalMs));
+        setOrdersFetchedCount(allOrders.length);
+        setOrdersSavedLastSync(savedOrders);
 
         setDashboardStats({
           totalOrders: Math.max(allOrders.length, storedOrdersCount),
@@ -211,13 +236,26 @@ export default function LionExHomePage() {
           storeName: urlStore ? normalizeStoreInfoStoreName("", urlStore) : current.storeName,
           isLoading: false,
         }));
+        setNextSyncTime("Unavailable");
+        setLastOrdersSyncTime("Unavailable");
+        setSyncInterval("Unknown interval");
+        setOrdersFetchedCount(0);
+        setOrdersSavedLastSync(0);
       }
     }
 
+    function handleSyncCompleted() {
+      loadDashboardStats();
+    }
+
     loadDashboardStats();
+    window.addEventListener(ORDER_SYNC_COMPLETED_EVENT, handleSyncCompleted);
+    const refreshInterval = window.setInterval(loadDashboardStats, DASHBOARD_REFRESH_INTERVAL_MS);
 
     return () => {
       isMounted = false;
+      window.removeEventListener(ORDER_SYNC_COMPLETED_EVENT, handleSyncCompleted);
+      window.clearInterval(refreshInterval);
     };
   }, [authenticatedFetch]);
 
@@ -258,6 +296,35 @@ export default function LionExHomePage() {
     ? "Loading..."
     : dashboardStats.storeName || "Store unavailable";
 
+  const orderSyncActivityItems = [
+    {
+      icon: "schedule",
+      title: "Last orders sync",
+      detail: lastOrdersSyncTime,
+      status: "Completed",
+      time: "",
+      tone: "success",
+    },
+    {
+      icon: "shopping_cart",
+      title: "Orders fetched from Shopify",
+      detail: formatOrderCount(ordersFetchedCount),
+      status: "Live",
+      time: "Real-time",
+      tone: "success",
+    },
+    {
+      icon: "storage",
+      title: "Orders saved to DB",
+      detail: formatOrderCount(ordersSavedLastSync),
+      status: "Synced",
+      time: "Last sync",
+      tone: "success",
+    },
+  ];
+
+  const mergedActivityItems = orderSyncActivityItems;
+
   return (
     <div className="lionex-home">
       <LionExSideNav activeLabel="Home" />
@@ -269,14 +336,7 @@ export default function LionExHomePage() {
           <section className="lionex-page-header">
             <div>
               <h2>LionEx Dashboard</h2>
-              <p>Manage your global logistics and Shopify synchronization in one place.</p>
-            </div>
-            <div className="lionex-page-header__actions">
-              <button className="lionex-button lionex-button--secondary" type="button">
-                <MaterialIcon>file_download</MaterialIcon>
-                Export Report
-              </button>
-              <SyncButton>Sync Now</SyncButton>
+              <p>Manage your E-Commerce and Shopify synchronization in one place.</p>
             </div>
           </section>
 
@@ -325,11 +385,11 @@ export default function LionExHomePage() {
                     <div className="lionex-store__meta">
                       <span>
                         <MaterialIcon>calendar_today</MaterialIcon>
-                        Next Sync: Today, 4:00 PM
+                      Next Sync: {nextSyncTime}
                       </span>
                       <span>
                         <MaterialIcon>update</MaterialIcon>
-                        Interval: 4 hours
+                        Interval: 10 Minutes
                       </span>
                     </div>
                   </div>
@@ -350,7 +410,7 @@ export default function LionExHomePage() {
                   <div>
                     <p>Auto-Sync is active</p>
                     <span>
-                      Your inventory and orders are automatically synced every 4 hours. No manual
+                      Your orders are automatically synced every 10 minutes. No manual
                       action is required for basic operations.
                     </span>
                   </div>
@@ -383,7 +443,7 @@ export default function LionExHomePage() {
                     </svg>
                     <strong>80%</strong>
                   </div>
-                  <p>Global Efficiency Score</p>
+                  <p>Orders Booking Rate</p>
                 </div>
               </div>
             </article>
@@ -392,10 +452,9 @@ export default function LionExHomePage() {
           <section className="lionex-card lionex-activity">
             <div className="lionex-card__header">
               <h3>Recent Sync Activity</h3>
-              <button type="button">View all logs</button>
             </div>
             <div className="lionex-activity__list">
-              {activityItems.map((item) => (
+              {mergedActivityItems.map((item) => (
                 <div className="lionex-activity__item" key={item.title}>
                   <div className={`lionex-activity__icon lionex-activity__icon--${item.tone}`}>
                     <MaterialIcon>{item.icon}</MaterialIcon>
@@ -415,7 +474,7 @@ export default function LionExHomePage() {
         </div>
 
         <footer className="lionex-footer">
-          <span>&copy; 2024 LionEx Logistics Systems</span>
+          <span>&copy; 2026 LionEx Private LTD.</span>
           <a href="#">Privacy Policy</a>
           <a href="#">Support</a>
           <a href="#">Documentation</a>

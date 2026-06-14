@@ -32,7 +32,13 @@ async function getInstalledShopsCollection() {
   return db.collection(INSTALLED_SHOPS_COLLECTION);
 }
 
-export async function registerInstalledShop({ shopDomain, storeName }) {
+export async function registerInstalledShop({
+  shopDomain,
+  storeName,
+  accessToken,
+  refreshToken,
+  expires,
+}) {
   const normalizedShopDomain = normalizeShopDomain(shopDomain);
 
   if (!normalizedShopDomain) {
@@ -40,15 +46,29 @@ export async function registerInstalledShop({ shopDomain, storeName }) {
   }
 
   const collection = await getInstalledShopsCollection();
+  const updateFields = {
+    shopDomain: normalizedShopDomain,
+    ...(storeName ? { storeName } : {}),
+    installed: true,
+    updatedAt: new Date(),
+  };
+
+  if (accessToken) {
+    updateFields.accessToken = accessToken;
+  }
+
+  if (refreshToken) {
+    updateFields.refreshToken = refreshToken;
+  }
+
+  if (expires) {
+    updateFields.expires = expires instanceof Date ? expires : new Date(expires);
+  }
+
   await collection.updateOne(
     { shopDomain: normalizedShopDomain },
     {
-      $set: {
-        shopDomain: normalizedShopDomain,
-        ...(storeName ? { storeName } : {}),
-        installed: true,
-        updatedAt: new Date(),
-      },
+      $set: updateFields,
       $setOnInsert: {
         createdAt: new Date(),
       },
@@ -65,8 +85,40 @@ async function getInstalledShops() {
 }
 
 async function getShopSession(shopDomain) {
-  const sessions = await sessionStorage.findSessionsByShop(shopDomain);
-  return sessions.find((session) => session?.accessToken) || null;
+  const normalizedShopDomain = normalizeShopDomain(shopDomain);
+
+  if (!normalizedShopDomain) {
+    return null;
+  }
+
+  const sessions = await sessionStorage.findSessionsByShop(normalizedShopDomain);
+  const storedSession = sessions.find((session) => session?.accessToken) || null;
+
+  if (storedSession) {
+    return storedSession;
+  }
+
+  const collection = await getInstalledShopsCollection();
+  const shopRecord = await collection.findOne({
+    shopDomain: normalizedShopDomain,
+    installed: true,
+    accessToken: { $exists: true, $ne: null },
+  });
+
+  if (!shopRecord?.accessToken) {
+    return null;
+  }
+
+  return {
+    id: `offline_${normalizedShopDomain}`,
+    shop: normalizedShopDomain,
+    state: "",
+    isOnline: false,
+    accessToken: shopRecord.accessToken,
+    refreshToken: shopRecord.refreshToken || undefined,
+    expires: shopRecord.expires || undefined,
+    scope: process.env.SCOPES || "",
+  };
 }
 
 function getGraphqlClient(session) {
@@ -244,7 +296,13 @@ async function syncShopOrders(shopRecord) {
     shopDomain: currentShopDomain,
   });
 
-  await registerInstalledShop({ shopDomain: currentShopDomain, storeName });
+  await registerInstalledShop({
+    shopDomain: currentShopDomain,
+    storeName,
+    accessToken: session.accessToken,
+    refreshToken: session.refreshToken || null,
+    expires: session.expires || null,
+  });
 
   return {
     shopDomain: currentShopDomain,

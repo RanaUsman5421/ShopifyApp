@@ -1,4 +1,5 @@
 // @ts-check
+import "dotenv/config";
 import { join } from "path";
 import { readFileSync } from "fs";
 import crypto from "crypto";
@@ -59,6 +60,14 @@ function startOrderSyncSchedulerWithRetry() {
 }
 
 startOrderSyncSchedulerWithRetry();
+
+connectToMongoDB()
+  .then(() => {
+    console.log(`MongoDB connected (${DB_NAME}).`);
+  })
+  .catch((error) => {
+    console.error("MongoDB connection failed at startup:", getMongoErrorMessage(error));
+  });
 
 function getDashboardApiUrl() {
   return (process.env.DASHBOARD_API_URL || "http://localhost:5000").replace(/\/$/, "");
@@ -363,9 +372,74 @@ async function getStoredSessionForShop(shopDomain) {
   return sessions.find((session) => session?.accessToken) || null;
 }
 
+function registerShopFromSession(session, storeName) {
+  registerInstalledShop({
+    shopDomain: session.shop,
+    storeName: storeName || null,
+    accessToken: session.accessToken,
+    refreshToken: session.refreshToken || null,
+    expires: session.expires || null,
+  }).catch((error) => {
+    console.error("Failed to register installed shop:", error);
+  });
+}
+
+async function attachSessionToRequest(req, res, session) {
+  if (!session?.accessToken) {
+    return false;
+  }
+
+  try {
+    const usableSession = await ensureUsableSession(session);
+    const activeSession = usableSession || session;
+
+    res.locals.shopify = {
+      ...(res.locals.shopify || {}),
+      session: activeSession,
+    };
+
+    registerShopFromSession(activeSession);
+    return true;
+  } catch (error) {
+    console.error("Failed to prepare Shopify session:", error);
+    res.locals.shopify = {
+      ...(res.locals.shopify || {}),
+      session,
+    };
+    registerShopFromSession(session);
+    return true;
+  }
+}
+
 async function attachShopifySession(req, res, next) {
   if (res.locals?.shopify?.session) {
     return next();
+  }
+
+  try {
+    const sessionId = await shopify.api.session.getCurrentId({
+      isOnline: shopify.config.useOnlineTokens,
+      rawRequest: req,
+      rawResponse: res,
+    });
+
+    if (sessionId) {
+      const session = await sessionStorage.loadSession(sessionId);
+
+      if (await attachSessionToRequest(req, res, session)) {
+        return next();
+      }
+    }
+  } catch (error) {
+    const message = error?.message || String(error);
+    const isExpectedMissingToken =
+      error?.name === "InvalidJwtError" ||
+      message.includes("session token") ||
+      message.includes("Session not found");
+
+    if (!isExpectedMissingToken) {
+      console.error("Failed to resolve Shopify session from token:", error);
+    }
   }
 
   let requestShop = getRequestShop(req);
@@ -376,7 +450,7 @@ async function attachShopifySession(req, res, next) {
     if (bearerMatch?.[1]) {
       try {
         const payload = await shopify.api.session.decodeSessionToken(bearerMatch[1]);
-        requestShop = payload.dest?.replace("https://", "") || "";
+        requestShop = payload.dest?.replace(/^https:\/\//, "").replace(/\/.*$/, "") || "";
       } catch (error) {
         console.error("Failed to decode Shopify session token:", error);
       }
@@ -387,25 +461,7 @@ async function attachShopifySession(req, res, next) {
     const session = await getStoredSessionForShop(requestShop);
 
     if (session) {
-      try {
-        const usableSession = await ensureUsableSession(session);
-        const activeSession = usableSession || session;
-
-        res.locals.shopify = {
-          ...(res.locals.shopify || {}),
-          session: activeSession,
-        };
-
-        registerInstalledShop({ shopDomain: activeSession.shop }).catch((error) => {
-          console.error("Failed to register installed shop from stored session:", error);
-        });
-      } catch (error) {
-        console.error("Failed to prepare stored Shopify session:", error);
-        res.locals.shopify = {
-          ...(res.locals.shopify || {}),
-          session,
-        };
-      }
+      await attachSessionToRequest(req, res, session);
     }
   } catch (error) {
     console.error("Failed to restore Shopify session from storage:", error);
@@ -632,6 +688,9 @@ app.get("/api/store/info", safeValidateAuthenticatedSession(), async (_req, res)
       await registerInstalledShop({
         shopDomain: shop.myshopifyDomain || res.locals.shopify.session.shop,
         storeName: shop.name || null,
+        accessToken: res.locals.shopify.session.accessToken,
+        refreshToken: res.locals.shopify.session.refreshToken || null,
+        expires: res.locals.shopify.session.expires || null,
       });
     } catch (registrationError) {
       console.error("Store info: Failed to register installed shop:", registrationError);
@@ -667,7 +726,12 @@ app.get(
       const session = res.locals.shopify?.session;
 
       if (session?.shop) {
-        await registerInstalledShop({ shopDomain: session.shop });
+        await registerInstalledShop({
+          shopDomain: session.shop,
+          accessToken: session.accessToken,
+          refreshToken: session.refreshToken || null,
+          expires: session.expires || null,
+        });
       }
     } catch (error) {
       console.error("Failed to register installed shop:", error);
@@ -853,6 +917,48 @@ app.post("/api/orders/save", async (req, res) => {
   }
 });
 
+app.get("/api/dashboard/link-status", async (_req, res) => {
+  try {
+    if (!res.locals?.shopify?.session) {
+      return res.status(200).send({
+        success: true,
+        linked: false,
+      });
+    }
+
+    const shopDomain = normalizeShopDomain(res.locals.shopify.session.shop);
+
+    if (!shopDomain) {
+      return res.status(200).send({
+        success: true,
+        linked: false,
+      });
+    }
+
+    const db = await connectToMongoDB();
+    const user = await db.collection("DashboardUsers").findOne({
+      $or: [
+        { "shopify.shopDomain": shopDomain },
+        { shopifyStores: { $elemMatch: { shopDomain } } },
+      ],
+    });
+
+    return res.status(200).send({
+      success: true,
+      linked: Boolean(user),
+      userName: user?.name || null,
+      shopDomain,
+    });
+  } catch (error) {
+    console.error("Dashboard link status error:", error);
+    return res.status(200).send({
+      success: true,
+      linked: false,
+      error: error?.message || "Failed to check link status.",
+    });
+  }
+});
+
 app.post(
   "/api/dashboard/link",
   safeValidateAuthenticatedSession(),
@@ -871,7 +977,13 @@ app.post(
     const storeName = shop?.name || res.locals.shopify.session.shop || "";
     const shopDomain = shop?.myshopifyDomain || res.locals.shopify.session.shop || "";
 
-    await registerInstalledShop({ shopDomain, storeName });
+    await registerInstalledShop({
+      shopDomain,
+      storeName,
+      accessToken: res.locals.shopify.session.accessToken,
+      refreshToken: res.locals.shopify.session.refreshToken || null,
+      expires: res.locals.shopify.session.expires || null,
+    });
 
     const linkResponse = await linkDashboardUserWithFallback({
       token,

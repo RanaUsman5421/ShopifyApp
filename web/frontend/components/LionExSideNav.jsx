@@ -19,8 +19,8 @@ export default function LionExSideNav({ activeLabel }) {
   return (
     <nav className="lionex-core-sidebar" aria-label="LionEx navigation">
       <div className="lionex-core-sidebar__brand">
-        <h1>LionEx</h1>
-        <p>Logistics Management</p>
+        <h1>LionEx Courier</h1>
+        <p>AI Powered Courier</p>
       </div>
       <div className="lionex-core-sidebar__links">
         {navItems.map((item) => {

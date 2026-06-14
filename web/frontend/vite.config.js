@@ -1,8 +1,12 @@
 import { defineConfig } from "vite";
-import { dirname } from "path";
+import { dirname, join } from "path";
+import { config as loadEnv } from "dotenv";
 import { fileURLToPath } from "url";
 import https from "https";
 import react from "@vitejs/plugin-react";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+loadEnv({ path: join(__dirname, "../.env") });
 
 if (
   process.env.npm_lifecycle_event === "build" &&

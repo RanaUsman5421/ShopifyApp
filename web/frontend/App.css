@@ -2574,13 +2574,14 @@ a.active {
 }
 
 .lionex-orders-table-scroll {
-    overflow-x: auto;
+    overflow-x: hidden;
 }
 
 .lionex-orders-table {
     width: 100%;
-    min-width: 960px;
+    max-width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     text-align: left;
 }
 
@@ -2593,6 +2594,8 @@ a.active {
 .lionex-orders-table td {
     padding: 16px;
     vertical-align: middle;
+    white-space: normal;
+    word-break: break-word;
 }
 
 .lionex-orders-table th {

@@ -1,5 +1,5 @@
 import { Banner, Button, TextField, TextStyle } from "@shopify/polaris";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LionExSideNav from "../components/LionExSideNav";
 import LionExTopBar from "../components/LionExTopBar";
 import { useAuthenticatedFetch } from "../hooks/useAuthenticatedFetch";
@@ -20,6 +20,38 @@ export default function LinkStore() {
   const [tokenVisible, setTokenVisible] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const [linkStatus, setLinkStatus] = useState({ loading: true, linked: false, userName: "" });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadLinkStatus() {
+      try {
+        const response = await authenticatedFetch("/api/dashboard/link-status");
+        const data = await response.json().catch(() => null);
+
+        if (!isMounted) {
+          return;
+        }
+
+        setLinkStatus({
+          loading: false,
+          linked: Boolean(data?.linked),
+          userName: data?.userName || "",
+        });
+      } catch (statusError) {
+        if (isMounted) {
+          setLinkStatus({ loading: false, linked: false, userName: "" });
+        }
+      }
+    }
+
+    loadLinkStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [authenticatedFetch]);
 
   async function linkDashboardUser() {
     setIsLinking(true);
@@ -68,6 +100,11 @@ export default function LinkStore() {
 
       setResult(response);
       setToken("");
+      setLinkStatus({
+        loading: false,
+        linked: true,
+        userName: response.linkedUser?.name || "",
+      });
     } catch (linkError) {
       setError(linkError.message);
     } finally {
@@ -150,6 +187,14 @@ export default function LinkStore() {
                 This token grants LionEx secure access to your order data.
               </div>
             </div>
+
+            {linkStatus.loading ? null : linkStatus.linked ? (
+              <Banner status="success">
+                <p>
+                  This store is linked to {linkStatus.userName || "your LionEx dashboard account"}.
+                </p>
+              </Banner>
+            ) : null}
 
             {error ? (
               <Banner status="critical">

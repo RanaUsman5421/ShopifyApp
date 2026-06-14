@@ -32,6 +32,36 @@ function formatCountdown(nextRunAt) {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
+export function formatNextSyncTime(dateString) {
+  if (!dateString) {
+    return "Unavailable";
+  }
+
+  const date = new Date(dateString);
+  const now = new Date();
+  const sameDay =
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate();
+
+  const timeOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+
+  if (sameDay) {
+    return `Today, ${date.toLocaleTimeString([], timeOptions)}`;
+  }
+
+  return date.toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    year: date.getFullYear() === now.getFullYear() ? undefined : "numeric",
+  });
+}
+
 function formatOrdersSyncTime(dateString) {
   if (!dateString) {
     return "No orders synced yet";
@@ -84,7 +114,7 @@ function Icon({ children, className = "" }) {
   return <span className={`material-symbols-outlined ${className}`}>{children}</span>;
 }
 
-function applySyncStatus(status, setSyncTimer) {
+export function applySyncStatus(status, setSyncTimer) {
   const nextRunAt = status?.nextRunAt || null;
   const lastRunAt = status?.lastRunAt || null;
 

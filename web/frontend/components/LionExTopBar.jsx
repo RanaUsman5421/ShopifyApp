@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuthenticatedFetch } from "../hooks/useAuthenticatedFetch";
 import { triggerOrderSync } from "../utils/orderSync";
+import { NavLink } from 'react-router-dom'
 
 export function MaterialIcon({ children, className = "", filled = false }) {
   return (
@@ -85,9 +86,9 @@ export default function LionExTopBar({
           </button>
         </div>
         <div className="lionex-divider" />
-        <button className="lionex-button lionex-button--secondary" type="button">
+        <NavLink to="/configuration"  className="lionex-button lionex-button--secondary" type="button">
           Settings
-        </button>
+        </NavLink>
         <SyncButton>Sync Now</SyncButton>
       </div>
     </header>

@@ -42,7 +42,7 @@ export default function HomePageTopBar({ searchQuery, setSearchQuery }) {
             help_outline
           </span>
         </button>
-        <div className="h-8 w-[1px] bg-outline-variant mx-space-2"></div>
+        <div className="h-8 w-px bg-outline-variant mx-space-2"></div>
         <button className="flex items-center gap-space-2 font-label-md text-label-md text-on-surface hover:bg-surface-container p-2 rounded-lg">
           <span className="material-symbols-outlined" data-icon="settings">
             settings

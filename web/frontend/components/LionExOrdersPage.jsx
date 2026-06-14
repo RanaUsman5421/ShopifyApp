@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import LionExSideNav from "./LionExSideNav";
 import LionExTopBar from "./LionExTopBar";
 import { useAuthenticatedFetch } from "../hooks/useAuthenticatedFetch";
+import { ORDER_SYNC_COMPLETED_EVENT } from "../utils/orderSync";
+
+const ORDERS_REFRESH_INTERVAL_MS = 30000;
 
 const tabs = ["All", "Unfulfilled", "Unpaid", "Open", "Closed"];
 
@@ -255,8 +258,10 @@ export default function LionExOrdersPage() {
   useEffect(() => {
     let isMounted = true;
 
-    async function loadOrders() {
-      setIsLoading(true);
+    async function loadOrders({ showLoading = false } = {}) {
+      if (showLoading) {
+        setIsLoading(true);
+      }
       setOrderError("");
 
       try {
@@ -331,10 +336,15 @@ export default function LionExOrdersPage() {
       }
     }
 
-    loadOrders();
+    loadOrders({ showLoading: true });
+    const handleSyncCompleted = () => loadOrders();
+    window.addEventListener(ORDER_SYNC_COMPLETED_EVENT, handleSyncCompleted);
+    const refreshInterval = window.setInterval(() => loadOrders(), ORDERS_REFRESH_INTERVAL_MS);
 
     return () => {
       isMounted = false;
+      window.removeEventListener(ORDER_SYNC_COMPLETED_EVENT, handleSyncCompleted);
+      window.clearInterval(refreshInterval);
     };
   }, [authenticatedFetch]);
 
@@ -420,9 +430,6 @@ export default function LionExOrdersPage() {
                 <MaterialIcon>file_download</MaterialIcon>
                 Export
               </button>
-              <button className="lionex-orders-button lionex-orders-button--primary" type="button">
-                Create order
-              </button>
             </div>
           </div>
 
@@ -469,7 +476,6 @@ export default function LionExOrdersPage() {
                     <th>Customer</th>
                     <th>Payment status</th>
                     <th>Fulfillment status</th>
-                    <th>Items</th>
                     <th>Total</th>
                   </tr>
                 </thead>
@@ -513,7 +519,6 @@ export default function LionExOrdersPage() {
                               {displayStatus(fulfillmentStatus)}
                             </span>
                           </td>
-                          <td>{getItemCount(order)}</td>
                           <td>{getOrderTotal(order)}</td>
                         </tr>
                       );
