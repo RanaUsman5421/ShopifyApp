@@ -136,10 +136,7 @@ a.active {
     flex-direction: column;
     min-height: 100vh;
 }
-.app-shell--lionex .app-shell__content {
-    margin-left: 256px;
-    min-width: 0;
-}
+
 .navmenu-section {
     width: 84px;
     background: #ffffff;
@@ -1826,7 +1823,7 @@ a.active {
 
 .lionex-progress__track span {
     display: block;
-    width: 75%;
+    width: 100%;
     height: 100%;
     border-radius: inherit;
     background: var(--lionex-primary);
@@ -2058,18 +2055,14 @@ a.active {
 }
 
 .lionex-footer {
-    margin-top: auto;
     min-height: 84px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 24px;
-    padding: 32px;
-    border-top: 1px solid var(--lionex-outline-variant);
     background: var(--lionex-surface);
     color: var(--lionex-on-surface-variant);
     font-size: 13px;
-    line-height: 16px;
     font-weight: 500;
 }
 
@@ -3781,7 +3774,7 @@ a.active {
 }
 
 .lionex-policy-grid aside > section:first-child {
-    position: sticky;
+    position: static;
     top: 84px;
 }
 

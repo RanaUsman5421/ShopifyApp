@@ -3,6 +3,10 @@ import "dotenv/config";
 import { join } from "path";
 import { readFileSync } from "fs";
 import crypto from "crypto";
+
+if (typeof globalThis.crypto === "undefined") {
+  globalThis.crypto = crypto;
+}
 import http from "http";
 import https from "https";
 import express from "express";
@@ -35,10 +39,10 @@ const PORT = parseInt(
   10
 );
 
-const STATIC_PATH =
-  process.env.NODE_ENV === "production"
-    ? `${process.cwd()}/frontend/dist`
-    : `${process.cwd()}/frontend/`;
+const isProduction = process.env.NODE_ENV === "production";
+const STATIC_PATH = isProduction
+  ? `${process.cwd()}/frontend/dist/`
+  : `${process.cwd()}/frontend/`;
 
 const app = express();
 
@@ -579,6 +583,21 @@ async function fetchProductsCount(session) {
   return data.productsCount?.count || 0;
 }
 
+async function fetchOrdersCount(session) {
+  const data = await runShopifyGraphql(
+    session,
+    `#graphql
+      query OrdersCount {
+        ordersCount {
+          count
+        }
+      }
+    `
+  );
+
+  return data.ordersCount?.count ?? 0;
+}
+
 async function fetchOrders(session) {
   const data = await runShopifyGraphql(
     session,
@@ -605,8 +624,6 @@ async function fetchOrders(session) {
             customer {
               firstName
               lastName
-              email
-              phone
               defaultAddress {
                 name
                 address1
@@ -651,6 +668,16 @@ async function fetchOrders(session) {
   );
 
   return Array.isArray(data.orders?.nodes) ? data.orders.nodes.map(mapGraphqlOrder) : [];
+}
+
+function getShopifyOrdersErrorMessage(error) {
+  const message = String(error?.message || error || "").trim();
+
+  if (message.includes("not approved to access the Order object")) {
+    return "Shopify order access requires Protected Customer Data approval in the Partner Dashboard.";
+  }
+
+  return message || "Failed to fetch orders from Shopify.";
 }
 
 // Read the authenticated store identity used by the app UI.
@@ -856,14 +883,23 @@ app.get("/api/orders/all", async (_req, res) => {
     }
 
     let data = [];
+    let fetchError = null;
+    let count = 0;
+
+    try {
+      count = await fetchOrdersCount(res.locals.shopify.session);
+    } catch (countError) {
+      console.error("Failed to fetch Shopify orders count:", countError);
+    }
 
     try {
       data = await fetchOrders(res.locals.shopify.session);
     } catch (shopifyError) {
+      fetchError = getShopifyOrdersErrorMessage(shopifyError);
       console.error("Failed to fetch orders from Shopify:", shopifyError);
     }
 
-    return res.status(200).send({ success: true, data });
+    return res.status(200).send({ success: true, data, count, fetchError });
   } catch (e) {
     console.error("Failed to fetch orders:", e?.message || e, e?.stack);
     return res.status(500).send({ success: false, error: e?.message || "Failed to fetch orders." });
@@ -1124,7 +1160,7 @@ app.use(shopify.ensureInstalledOnShop(), async (_req, res) => {
   return res
     .status(200)
     .set("Content-Type", "text/html")
-    .send(readFileSync(join(STATIC_PATH, "index.html")));
+    .sendFile(join(STATIC_PATH, "index.html"));
 });
 
 app.listen(PORT);

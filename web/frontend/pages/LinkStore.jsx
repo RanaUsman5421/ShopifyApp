@@ -1,7 +1,8 @@
-import { Banner, Button, TextField, TextStyle } from "@shopify/polaris";
+﻿import { Banner, Button, TextField, TextStyle } from "@shopify/polaris";
 import { useEffect, useState } from "react";
 import LionExSideNav from "../components/LionExSideNav";
 import LionExTopBar from "../components/LionExTopBar";
+import Footer from "../components/Footer";
 import { useAuthenticatedFetch } from "../hooks/useAuthenticatedFetch";
 import "../App.css";
 
@@ -212,6 +213,7 @@ export default function LinkStore() {
           </div>
         </div>
       </div>
+      <Footer />
       </main>
     </div>
   );

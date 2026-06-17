@@ -8,7 +8,6 @@ import {
   AppBridgeProvider,
   QueryProvider,
   PolarisProvider,
-  TopBar,
 } from "./components";
 
 export default function App() {
@@ -29,7 +28,7 @@ export default function App() {
 
 function AppContent({ pages }) {
   const location = useLocation();
-  const shelllessRoutes = ["/", "/homepage", "/orders", "/menu", "/syncstatus", "/configuration", "/privacypolicy"];
+  const shelllessRoutes = ["/", "/homepage", "/orders", "/linkStore", "/syncstatus", "/configuration", "/privacypolicy"];
   const isShelllessRoute = shelllessRoutes.includes(location.pathname.toLowerCase());
 
   return (
@@ -41,7 +40,6 @@ function AppContent({ pages }) {
         <div className="app-shell app-shell--lionex">
           <LionExSideNav />
           <div className="app-shell__content">
-            <TopBar />
             <Routes pages={pages} />
           </div>
         </div>

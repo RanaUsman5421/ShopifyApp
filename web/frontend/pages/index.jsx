@@ -1,6 +1,4 @@
 import "../App.css";
-import LionExHomePage from "../components/LionExHomePage";
+import HomePage from "./HomePage";
 
-export default function HomePage() {
-  return <LionExHomePage />;
-}
+export default HomePage;

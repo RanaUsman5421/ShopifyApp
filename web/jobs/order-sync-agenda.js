@@ -226,8 +226,6 @@ async function fetchOrders(session) {
             customer {
               firstName
               lastName
-              email
-              phone
               defaultAddress {
                 name
                 address1

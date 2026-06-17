@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import { ORDERS_COLLECTION } from "./config.js";
 import { connectToMongoDB } from "./connection.js";
 
@@ -102,13 +102,33 @@ export async function saveOrdersToMongoDB(orders, storeIdentity) {
   }
 
   const existingStore = await collection.findOne(filters.length === 1 ? filters[0] : { $or: filters });
+  const existingOrders = Array.isArray(existingStore?.orders) ? existingStore.orders : [];
+  const existingOrdersById = new Map(
+    existingOrders
+      .filter((order) => order?.shopifyOrderId)
+      .map((order) => [String(order.shopifyOrderId), order])
+  );
+
+  const mergedOrders = mappedOrders.map((order) => {
+    const existingOrder = existingOrdersById.get(String(order.shopifyOrderId));
+
+    if (!existingOrder) {
+      return order;
+    }
+
+    return {
+      ...existingOrder,
+      ...Object.fromEntries(Object.entries(order).filter(([, value]) => value != null && value !== "")),
+    };
+  });
+
   const result = await collection.updateOne(
     existingStore?._id ? { _id: existingStore._id } : filters.length === 1 ? filters[0] : { $or: filters },
     {
       $set: {
         storeName: normalizedStoreName,
         ...(normalizedShopDomain ? { shopDomain: normalizedShopDomain } : {}),
-        orders: mappedOrders,
+        orders: mergedOrders,
         updatedAt: new Date(),
       },
       $setOnInsert: {
@@ -124,7 +144,7 @@ export async function saveOrdersToMongoDB(orders, storeIdentity) {
   );
 
   return {
-    savedCount: mappedOrders.length,
+    savedCount: mergedOrders.length,
     matchedCount: result.matchedCount || 0,
     modifiedCount: result.modifiedCount || 0,
     upsertedCount: result.upsertedCount || 0,

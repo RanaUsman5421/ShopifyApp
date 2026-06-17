@@ -1,7 +1,6 @@
-export { ProductsCard } from "./ProductsCard";
-export { NavigationBar } from "./NavigationBar";
-export { TopBar } from "./TopBar";
-export { OrderGraphs } from "./OrderGraphs";
-export { Card } from "./Card";
-export { OrderDetails } from "./OrderDetails";
+export { default as Footer } from "./Footer";
+export { default as LionExSideNav } from "./LionExSideNav";
+export { default as LionExTopBar } from "./LionExTopBar";
+export { default as OrdersTable } from "./OrdersTable";
+export { default as Sidebar } from "./Sidebar";
 export * from "./providers";

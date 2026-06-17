@@ -1,16 +1,16 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "7390141f23aa85e6c42a404386ecda64"
-application_url = "https://example.com"
+client_id = "7ef52204f1f0ce119cdc8ede2c58fa59"
+name = "LionEx Courier 2"
+application_url = "https://shopifyapp-xif5.onrender.com"
 embedded = true
-name = "OrdersApp"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products,read_products,read_orders"
+scopes = "read_orders,read_products,write_products,read_customers"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://shopifyapp-xif5.onrender.com/api/auth" ]
 
 [webhooks]
 api_version = "2026-07"
