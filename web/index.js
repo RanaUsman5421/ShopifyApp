@@ -41,8 +41,18 @@ const PORT = parseInt(
 
 const isProduction = process.env.NODE_ENV === "production";
 const STATIC_PATH = isProduction
+<<<<<<< HEAD
   ? `${process.cwd()}/frontend/dist/`
   : `${process.cwd()}/frontend/`;
+=======
+  ? `${process.cwd()}/frontend/dist`
+  : `${process.cwd()}/frontend/`;
+const DEV_FRONTEND_HOST = process.env.HOST
+  ? process.env.HOST.replace(/https?:\/\//, "")
+  : "localhost";
+const DEV_FRONTEND_PORT = process.env.FRONTEND_PORT || "5173";
+const DEV_FRONTEND_ORIGIN = `http://${DEV_FRONTEND_HOST}:${DEV_FRONTEND_PORT}`;
+>>>>>>> a5acf6134759c8570eaf4d455086259e5ae8a3ae
 
 const app = express();
 
@@ -1154,7 +1164,16 @@ app.get("/api/products/create", async (_req, res) => {
 });
 
 app.use(shopify.cspHeaders());
-app.use(serveStatic(STATIC_PATH, { index: false }));
+app.use(
+  serveStatic(STATIC_PATH, {
+    index: false,
+    setHeaders(res, path) {
+      if (path.endsWith(".jsx") || path.endsWith(".tsx")) {
+        res.setHeader("Content-Type", "application/javascript");
+      }
+    },
+  })
+);
 
 app.use(shopify.ensureInstalledOnShop(), async (_req, res) => {
   return res
