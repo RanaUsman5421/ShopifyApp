@@ -310,28 +310,15 @@ export default function LionExOrdersPage() {
           }
         }
 
-        if (shopifyOrders.length > 0) {
-          await fetchOptionalJson(
+        if (storeLookupKey) {
+          const refreshedStoredOrdersResponse = await fetchOptionalJson(
             authenticatedFetch,
-            "/api/orders/save",
-            { savedCount: 0 },
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ orders: shopifyOrders }),
-            }
+            `/api/orders/store?storename=${encodeURIComponent(storeLookupKey)}`,
+            null
           );
 
-          if (storeLookupKey) {
-            const refreshedStoredOrdersResponse = await fetchOptionalJson(
-              authenticatedFetch,
-              `/api/orders/store?storename=${encodeURIComponent(storeLookupKey)}`,
-              null
-            );
-
-            if (Array.isArray(refreshedStoredOrdersResponse?.data?.orders)) {
-              storedOrders = refreshedStoredOrdersResponse.data.orders;
-            }
+          if (Array.isArray(refreshedStoredOrdersResponse?.data?.orders)) {
+            storedOrders = refreshedStoredOrdersResponse.data.orders;
           }
         }
 

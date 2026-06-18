@@ -68,14 +68,14 @@ function startOrderSyncSchedulerWithRetry() {
   });
 }
 
-startOrderSyncSchedulerWithRetry();
-
 connectToMongoDB()
   .then(() => {
     console.log(`MongoDB connected (${DB_NAME}).`);
+    startOrderSyncSchedulerWithRetry();
   })
   .catch((error) => {
     console.error("MongoDB connection failed at startup:", getMongoErrorMessage(error));
+    startOrderSyncSchedulerWithRetry();
   });
 
 function getDashboardApiUrl() {
@@ -1044,32 +1044,19 @@ app.post(
       });
     }
 
-    let orders = [];
-    let saveResult = { savedCount: 0 };
-    let orderSyncError = null;
-
-    try {
-      orders = await fetchOrders(res.locals.shopify.session);
-      saveResult = await saveOrdersToMongoDB(orders, { storeName, shopDomain });
-    } catch (syncError) {
-      orderSyncError = syncError?.message || "Failed to sync Shopify orders.";
-      console.error("Dashboard link order sync error:", syncError);
-    }
-
     return res.status(200).send({
       success: true,
-      message: orderSyncError
-        ? "Dashboard user linked to this Shopify store. Order sync failed."
-        : "Dashboard user linked to this Shopify store.",
+      message: "Dashboard user linked to this Shopify store. Orders will sync on the next scheduled sync.",
       linkedUser: linkResponse.data.data,
       shop: {
         storeName,
         shopDomain,
       },
       orders: {
-        fetchedCount: orders.length,
-        savedCount: saveResult.savedCount || 0,
-        error: orderSyncError,
+        fetchedCount: 0,
+        savedCount: 0,
+        error: null,
+        note: "Orders will be persisted during the scheduled Agenda sync.",
       },
     });
   } catch (error) {

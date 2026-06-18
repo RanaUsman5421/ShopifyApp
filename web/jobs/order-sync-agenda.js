@@ -276,23 +276,35 @@ async function syncShopOrders(shopRecord) {
   const shopDomain = normalizeShopDomain(shopRecord?.shopDomain);
 
   if (!shopDomain) {
-    return { shopDomain: "", fetchedCount: 0, savedCount: 0, skipped: true };
+    console.log("Order sync skipped because shop record has no valid domain.");
+    return { shopDomain: "", fetchedCount: 0, savedCount: 0, skipped: true, reason: "invalid_shop_domain" };
   }
 
   const session = await getShopSession(shopDomain);
 
   if (!session) {
-    return { shopDomain, fetchedCount: 0, savedCount: 0, skipped: true };
+    console.log(`Order sync skipped for ${shopDomain} because no usable Shopify session was available.`);
+    return {
+      shopDomain,
+      fetchedCount: 0,
+      savedCount: 0,
+      skipped: true,
+      reason: "session_not_available",
+    };
   }
 
   const shop = await fetchShopInfo(session);
   const storeName = shop?.name || shopRecord.storeName || shopDomain;
   const currentShopDomain = normalizeShopDomain(shop?.myshopifyDomain || session.shop || shopDomain);
   const orders = await fetchOrders(session);
+  console.log(`Fetched ${orders.length} order(s) for ${currentShopDomain}.`);
+
   const saveResult = await saveOrdersToMongoDB(orders, {
     storeName,
     shopDomain: currentShopDomain,
   });
+
+  console.log(`Persisted ${saveResult.savedCount || 0} order(s) for ${currentShopDomain}.`);
 
   await registerInstalledShop({
     shopDomain: currentShopDomain,
@@ -322,11 +334,18 @@ async function syncInstalledShopOrders() {
 
   try {
     const shops = await getInstalledShops();
+    console.log(`Order sync will process ${shops.length} installed shop(s).`);
+
+    if (shops.length === 0) {
+      console.log("Order sync found no installed shops to process.");
+    }
+
     const results = [];
 
     for (const shopRecord of shops) {
       try {
-        results.push(await syncShopOrders(shopRecord));
+        const result = await syncShopOrders(shopRecord);
+        results.push(result);
       } catch (error) {
         console.error(`Order sync failed for ${shopRecord?.shopDomain || "unknown shop"}:`, error);
         results.push({
@@ -339,6 +358,7 @@ async function syncInstalledShopOrders() {
     console.log("Order sync completed.", {
       shops: shops.length,
       savedCount: results.reduce((sum, result) => sum + (result.savedCount || 0), 0),
+      skippedCount: results.reduce((sum, result) => sum + (result?.skipped ? 1 : 0), 0),
     });
   } finally {
     isSyncRunning = false;
@@ -359,10 +379,13 @@ export async function startOrderSyncAgenda() {
     processEvery: "1 minute",
   });
 
-  nextAgenda.define(ORDER_SYNC_JOB_NAME, { lockLifetime: 9 * 60 * 1000 }, syncInstalledShopOrders);
+  nextAgenda.define(ORDER_SYNC_JOB_NAME, syncInstalledShopOrders, {
+    lockLifetime: 9 * 60 * 1000,
+  });
 
   try {
     await nextAgenda.start();
+    await nextAgenda.cancel({ name: ORDER_SYNC_JOB_NAME });
     await nextAgenda.every(ORDER_SYNC_INTERVAL, ORDER_SYNC_JOB_NAME);
   } catch (error) {
     agenda = null;

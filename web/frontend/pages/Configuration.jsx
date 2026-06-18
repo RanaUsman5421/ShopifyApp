@@ -36,7 +36,7 @@ export default function Configuration() {
           <article className="lionex-config-card prefs">
             <header><section><h3>Sync Preferences</h3></section></header>
             <main>
-              <p>Choose how often LionEx should pull updates from your inventory and orders.</p>
+              <p>Choose how often LionEx should pull updates from your Orders.</p>
               <div className="lionex-frequency-grid">
                 {frequencies.map(([label, icon, note]) => (
                   <button className={frequency === label ? "active" : ""} key={label} onClick={() => setFrequency(label)}>

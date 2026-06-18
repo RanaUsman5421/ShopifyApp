@@ -289,11 +289,6 @@ export default function SyncStatus() {
           <header>
             <div>
               <h3>Sync Event History</h3>
-              <p>Past 24 hours of connectivity and data exchange</p>
-            </div>
-            <div>
-              <button type="button"><Icon>filter_list</Icon></button>
-              <button type="button"><Icon>download</Icon></button>
             </div>
           </header>
           <div className="lionex-log-table-wrap" style={{ overflowX: 'hidden' }}>

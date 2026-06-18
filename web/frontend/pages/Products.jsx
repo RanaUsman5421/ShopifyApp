@@ -184,22 +184,6 @@ function Products() {
           );
         }
 
-        if (allOrders.length > 0) {
-          const saveResponse = await fetchOptionalJson(
-            authenticatedFetch,
-            "/api/orders/save",
-            { savedCount: 0 },
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ orders: allOrders }),
-            }
-          );
-          savedOrders = saveResponse.savedCount || 0;
-        }
-
         const storeLookupKey = storeDomain || storeName;
 
         if (storeLookupKey) {
@@ -213,7 +197,7 @@ function Products() {
             storedOrdersCount = Array.isArray(storedOrdersResponse.data?.orders)
               ? storedOrdersResponse.data.orders.length
               : 0;
-            savedOrders = storedOrdersCount || savedOrders;
+            savedOrders = storedOrdersCount;
 
             if (orderFetchFailed && Array.isArray(storedOrdersResponse.data?.orders)) {
               fetchedOrders = storedOrdersResponse.data.orders;
