@@ -112,6 +112,8 @@ export default function SyncStatus() {
     syncProgress: 0,
   });
   const [syncing, setSyncing] = useState(false);
+  const [eventLogs, setEventLogs] = useState([]);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -126,6 +128,47 @@ export default function SyncStatus() {
 
         if (isMounted) {
           applySyncStatus(response.data, setSyncTimer);
+          // fetch recent order-related events to display in the event history table
+          try {
+            const ordersResp = await authenticatedFetch("/api/orders/all");
+            const ordersJson = await ordersResp.json().catch(() => null);
+
+            const ordersArray = Array.isArray(ordersJson?.data) ? ordersJson.data : [];
+            // build a compact list of recent order events (most recent first)
+            const recent = ordersArray
+              .slice()
+              .sort((a, b) => {
+                const ta = new Date(a.created_at || a.createdAt || 0).getTime();
+                const tb = new Date(b.created_at || b.createdAt || 0).getTime();
+                return tb - ta;
+              })
+              .slice(0, 50)
+                .map((order) => {
+                  const created = order.created_at || order.createdAt || null;
+                  const time = created ? new Date(created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--:--:--';
+                  const fulfillment = (order.fulfillment_status || order.fulfillmentStatus || '').toLowerCase();
+                  const payment = (order.financial_status || order.financialStatus || '').toLowerCase();
+                  const statusLabel = payment.includes('void') || payment.includes('refunded') ? 'Warning' : 'Successful';
+                  const eventType = fulfillment.includes('fulfilled') ? 'Order Fulfilled' : 'Order Synced';
+                  const icon = 'shopping_cart';
+                  const orderName = order.name || order.orderName || (order.orderNumber ? `#${order.orderNumber}` : `#${order.id || '-'}`);
+                  const customer = order.customer?.first_name || order.customerName || order.email || order.phone || 'Customer';
+                  const total = (() => {
+                    const raw = order.total_price ?? order.totalPrice ?? order.total;
+                    const num = Number(raw);
+                    return Number.isFinite(num) ? `${num.toFixed(2)}` : (raw ? String(raw) : '-');
+                  })();
+
+                  const message = `${orderName} · ${total}`;
+
+                  return [time, icon, eventType, message, statusLabel, customer];
+                });
+
+            setEventLogs(recent);
+          } catch (e) {
+            // keep fallback logs if fetching fails
+            console.error('Failed to fetch recent orders for event history:', e);
+          }
         }
       } catch (error) {
         if (isMounted) {
@@ -169,13 +212,24 @@ export default function SyncStatus() {
 
   const isOrdersSyncActive = syncing || syncTimer.isSyncRunning;
   const syncProgressPercent = isOrdersSyncActive ? 100 : Math.round(syncTimer.syncProgress);
-  const logs = [
+  const fallbackLogs = [
     ["14:12:03", "inventory", "Inventory Update", "Synced 142 items from Zone A-4", "Successful"],
     ["13:55:20", "rocket_launch", "Order Dispatch", "Webhook sent to Carrier-DHL: #LX-9902", "Successful"],
     ["13:30:11", "api", "API Handshake", "Re-authenticated Shopify endpoint LX-Primary", "Successful"],
     ["12:45:00", "warning", "System Latency", "Response time exceeded 500ms for Warehouse B", "Warning"],
     ["12:00:15", "cloud_sync", "Global Sync", "Full catalog refresh complete (1,240 SKU)", "Successful"],
   ];
+
+  const displayLogs = eventLogs && eventLogs.length > 0 ? eventLogs : fallbackLogs;
+  const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(displayLogs.length / pageSize));
+  const maxPage = Math.max(0, totalPages - 1);
+  const currentPage = Math.min(page, maxPage);
+  const startIndex = displayLogs.length === 0 ? 0 : currentPage * pageSize + 1;
+  const endIndex = Math.min((currentPage + 1) * pageSize, displayLogs.length);
+  const pagedLogs = displayLogs.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
+  const pagerWindowSize = Math.min(5, totalPages);
+  const pagerStart = Math.max(0, Math.min(currentPage - Math.floor(pagerWindowSize / 2), totalPages - pagerWindowSize));
 
   async function handleManualResync() {
     if (syncing || syncTimer.isSyncRunning) {
@@ -207,7 +261,7 @@ export default function SyncStatus() {
             <div className="lionex-pulse" />
             <span>Real-time Connection: Active</span>
             <h2>Systems Synchronized</h2>
-            <p>LionEx is currently maintaining a stable connection with your warehouse and inventory hubs. All 14 endpoints are responding within 240ms.</p>
+            <p>LionEx is currently maintaining a stable connection with your Store. All Endpoints are responding within 10 Minutes.</p>
             <div>
               <button type="button" onClick={handleManualResync} disabled={syncing || syncTimer.isSyncRunning}>
                 <Icon className={syncing ? "lionex-spin" : ""}>sync</Icon>
@@ -242,35 +296,61 @@ export default function SyncStatus() {
               <button type="button"><Icon>download</Icon></button>
             </div>
           </header>
-          <div className="lionex-log-table-wrap">
-            <table className="lionex-log-table">
+          <div className="lionex-log-table-wrap" style={{ overflowX: 'hidden' }}>
+            <table className="lionex-log-table" style={{ tableLayout: 'fixed', width: '100%' }}>
               <thead>
-                <tr><th>Time</th><th>Event Type</th><th>Message</th><th>Status</th><th>Actions</th></tr>
+                <tr><th>Time</th><th>Event Type</th><th>Name</th><th>Message</th></tr>
               </thead>
               <tbody>
-                {logs.map(([time, icon, type, message, status]) => (
-                  <tr className={status === "Warning" ? "warning" : ""} key={`${time}-${type}`}>
-                    <td>{time}</td>
-                    <td><span><Icon>{icon}</Icon>{type}</span></td>
-                    <td>{message}</td>
-                    <td><strong className={status === "Warning" ? "error" : ""}>{status}</strong></td>
-                    <td><button type="button">{status === "Warning" ? "Run Diagnostic" : "View Details"}</button></td>
+                {pagedLogs.map(([time, icon, type, message, status, name]) => (
+                  <tr className={status === "Warning" ? "warning" : ""} key={`${time}-${type}-${name}`}>
+                    <td style={{ whiteSpace: 'nowrap', width: '85px' }}>{time}</td>
+                    <td style={{ whiteSpace: 'nowrap', width: '140px' }}><span><Icon>{icon}</Icon>{type}</span></td>
+                    <td style={{ whiteSpace: 'nowrap', width: '180px' }}>{name}</td>
+                    <td style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{message}</td>
+                    <td style={{ whiteSpace: 'nowrap', width: '110px' }}><strong className={status === "Warning" ? "error" : ""}>{status}</strong></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <footer><p>Showing 5 of 450 entries</p><nav><button disabled>Previous</button><button>1</button><button>2</button><button>3</button><button>Next</button></nav></footer>
+          <footer>
+            <p>Showing {startIndex}-{endIndex} of {displayLogs.length.toLocaleString()} entries</p>
+            <nav>
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={currentPage === 0}
+                style={{ background: 'transparent', boxShadow: 'none', borderColor: 'transparent' }}
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
+                disabled={currentPage >= maxPage}
+                style={{ background: 'transparent', boxShadow: 'none', borderColor: 'transparent' }}
+              >
+                Next
+              </button>
+            </nav>
+          </footer>
         </section>
 
         <section className="lionex-image-grid">
           <article>
-            <img alt="Server Architecture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFx6t2T-Na0tJIrvxaZJmXbs_kz_-xuRaSfAGaiHDHbbqLFCVhBuawPdbCcD2e9v24f41a6LXQa8q3g5SAk-OMOiZfeYgLa5qTDZ1bz4yk4z1N7AQKa6eUwUT1DrTRIE_dmEBfni71x1YxKWtgxLcWSXIS8UjugdEKMJ849k5Xli7dfjrus0oARuMCBdznijifWWh0jq_G5dk3EKoehhA_H4Wo3px0-BLJT3Q5iozcJJIPSj2jz1vgQvde8JCMtpbw9ALv_af6p0RB" />
-            <div><h4>Node Resilience</h4><p>Redundant pathways active across 4 global regions.</p></div>
+            <img alt="E-commerce packages" src="https://news.mit.edu/sites/default/files/images/202110/MIT-Wise-Systems-01.jpg" />
+            <div>
+              <h4>Order Sync & Dispatch</h4>
+              <p>Real-time import of Shopify orders into LionEx so shipments can be created and dispatched automatically.</p>
+            </div>
           </article>
           <article>
-            <img alt="Warehouse Connection" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9e83_bzYBVqbrTqDsXYhlnxfcsG-CLPoemH_VMWHvcO9oIG-Pe4YOO2tbjNINv_6lEYGmAoG5LmWJlNfjeZGE02BSq6g0-ThzDIPCZkVmjFmclwMydZQCLsxLBRgJeS8PM4ljHjJEH56do73-ApVziMbgLxB9wyNHJbZ7igxRFVfOUmT4RKt3dR6RsVChuS_7wD3FurFs7inJ7jz3nADY0LDCmXXiFrfr8Yc7bbKO4cTUOyj6sXMpAp1_tlU1qaQtqOAIqhux63mK" />
-            <div><h4>Warehouse Mesh</h4><p>Physical and digital inventory mapped in real-time.</p></div>
+            <img alt="Courier delivery van" src="https://plus.unsplash.com/premium_photo-1681488262364-8aeb1b6aac56?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZSUyMGNvbW1lcmNlfGVufDB8fDB8fHww" />
+            <div>
+              <h4>Courier Integration</h4>
+              <p>Connect multiple carriers to automatically generate shipping labels, track deliveries, and surface status updates in your store.</p>
+            </div>
           </article>
         </section>
       </main>

@@ -6,7 +6,6 @@ const navItems = [
   { icon: "inventory_2", label: "Link Store", path: "/linkStore" },
   { icon: "sync", label: "Sync Status", path: "/syncStatus" },
   { icon: "settings", label: "Configuration", path: "/configuration" },
-  { icon: "policy", label: "Privacy Policy", path: "/privacyPolicy" },
 ];
 
 function MaterialIcon({ children }) {

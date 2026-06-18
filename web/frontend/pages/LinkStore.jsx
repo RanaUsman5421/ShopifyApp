@@ -21,7 +21,7 @@ export default function LinkStore() {
   const [tokenVisible, setTokenVisible] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
-  const [linkStatus, setLinkStatus] = useState({ loading: true, linked: false, userName: "" });
+  const [linkStatus, setLinkStatus] = useState({ loading: true, linked: false, userName: "", storeName: "" });
 
   useEffect(() => {
     let isMounted = true;
@@ -39,6 +39,8 @@ export default function LinkStore() {
           loading: false,
           linked: Boolean(data?.linked),
           userName: data?.userName || "",
+          storeName:
+            data?.shop?.storeName || data?.storeName || data?.store?.name || "",
         });
       } catch (statusError) {
         if (isMounted) {
@@ -105,6 +107,7 @@ export default function LinkStore() {
         loading: false,
         linked: true,
         userName: response.linkedUser?.name || "",
+        storeName: response.shop?.storeName || response.shop?.name || "",
       });
     } catch (linkError) {
       setError(linkError.message);
@@ -137,6 +140,9 @@ export default function LinkStore() {
           </div>
 
           <div className="dashboard-link-body">
+
+            {linkStatus.loading || !linkStatus.linked ? (
+              <div className="dashboard-link-form">
             <div className="dashboard-link-info">
               <div className="dashboard-link-info__icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -152,50 +158,47 @@ export default function LinkStore() {
                 </div>
               </div>
             </div>
-
-            <div className="dashboard-link-form">
-              <div className="token-field-wrapper">
-                <TextField
-                  label="Dashboard Token"
-                  value={token}
-                  onChange={setToken}
-                  autoComplete="off"
-                  placeholder="sdu_xxxxxxxxxxxxx"
-                  disabled={isLinking}
-                  type={tokenVisible ? "text" : "password"}
-                />
-                <button
-                  type="button"
-                  className="token-field-eye"
-                  onClick={() => setTokenVisible((visible) => !visible)}
-                  aria-label={tokenVisible ? "Hide token" : "Show token"}
-                >
-                  <EyeIcon visible={tokenVisible} />
-                </button>
+                <div className="token-field-wrapper">
+                  <TextField
+                    label="Dashboard Token"
+                    value={token}
+                    onChange={setToken}
+                    autoComplete="off"
+                    placeholder="sdu_xxxxxxxxxxxxx"
+                    disabled={isLinking}
+                    type={tokenVisible ? "text" : "password"}
+                  />
+                  <button
+                    type="button"
+                    className="token-field-eye"
+                    onClick={() => setTokenVisible((visible) => !visible)}
+                    aria-label={tokenVisible ? "Hide token" : "Show token"}
+                  >
+                    <EyeIcon visible={tokenVisible} />
+                  </button>
+                </div>
+                <div className="dashboard-link-actions">
+                  <Button
+                    fullWidth
+                    primary
+                    onClick={linkDashboardUser}
+                    loading={isLinking}
+                    disabled={!token.trim()}
+                  >
+                    Link Store →
+                  </Button>
+                </div>
+                <div className="dashboard-link-help-text">
+                  This token grants LionEx secure access to your order data.
+                </div>
               </div>
-              <div className="dashboard-link-actions">
-                <Button
-                  fullWidth
-                  primary
-                  onClick={linkDashboardUser}
-                  loading={isLinking}
-                  disabled={!token.trim()}
-                >
-                  Link Store →
-                </Button>
-              </div>
-              <div className="dashboard-link-help-text">
-                This token grants LionEx secure access to your order data.
-              </div>
-            </div>
-
-            {linkStatus.loading ? null : linkStatus.linked ? (
+            ) : (
               <Banner status="success">
                 <p>
-                  This store is linked to {linkStatus.userName || "your LionEx dashboard account"}.
+                  This Store is connected to the LionEx Courier.
                 </p>
               </Banner>
-            ) : null}
+            )}
 
             {error ? (
               <Banner status="critical">

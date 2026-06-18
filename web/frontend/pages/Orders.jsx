@@ -400,7 +400,7 @@ export default function LionExOrdersPage() {
       });
   }, [orders, searchQuery, selectedTab]);
 
-  const pageSize = 13;
+  const pageSize = 10;
   const maxPage = Math.max(0, Math.ceil(filteredOrders.length / pageSize) - 1);
   const currentPage = Math.min(page, maxPage);
   const pagedOrders = filteredOrders.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
@@ -455,12 +455,6 @@ export default function LionExOrdersPage() {
         <div className="lionex-orders-content">
           <div className="lionex-orders-header">
             <h2>Orders</h2>
-            <div>
-              <button className="lionex-orders-button lionex-orders-button--secondary" type="button">
-                <MaterialIcon>file_download</MaterialIcon>
-                Export
-              </button>
-            </div>
           </div>
 
           {orderError ? <div className="lionex-orders-error">{orderError}</div> : null}
@@ -566,9 +560,8 @@ export default function LionExOrdersPage() {
 
             <div className="lionex-orders-pagination">
               <p>
-                Showing {filteredOrders.length === 0 ? 0 : currentPage * pageSize + 1}-
-                {Math.min((currentPage + 1) * pageSize, filteredOrders.length)} of{" "}
-                {filteredOrders.length.toLocaleString()} orders
+                Page {currentPage + 1} of {maxPage + 1} · Showing {filteredOrders.length === 0 ? 0 : currentPage * pageSize + 1}-
+                {Math.min((currentPage + 1) * pageSize, filteredOrders.length)} of {filteredOrders.length.toLocaleString()} orders
               </p>
               <div>
                 <button

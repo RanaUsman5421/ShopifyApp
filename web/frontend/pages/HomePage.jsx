@@ -347,7 +347,7 @@ export default function LionExHomePage() {
     },
     {
       icon: "shopping_cart",
-      title: "Orders fetched from Shopify",
+      title: "Orders fetched from Shopify Store",
       detail: formatOrderCount(ordersFetchedCount),
       status: "Live",
       time: "Real-time",
@@ -355,7 +355,7 @@ export default function LionExHomePage() {
     },
     {
       icon: "storage",
-      title: "Orders saved to DB",
+      title: "Orders sent to LionEx",
       detail: formatOrderCount(ordersSavedLastSync),
       status: "Synced",
       time: "Last sync",
