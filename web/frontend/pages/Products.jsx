@@ -1,5 +1,6 @@
 import { LegacyCard as Card, Page, Button, TextField } from "@shopify/polaris";
 import React, { useEffect, useMemo, useState } from "react";
+ 
 import { useAuthenticatedFetch } from "../hooks/useAuthenticatedFetch";
 
 async function readOptionalJsonResponse(response, fallbackValue) {
@@ -125,6 +126,7 @@ function Products() {
   const [selectedTab, setSelectedTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [orderError, setOrderError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -221,6 +223,7 @@ function Products() {
             : "Store information unavailable",
           storeName,
         });
+        setIsLoading(false);
       } catch (error) {
         if (!isMounted) {
           return;
@@ -235,6 +238,7 @@ function Products() {
             ? `Store connected: ${urlStore}`
             : `Store connection error: ${error.message}`,
         }));
+        setIsLoading(false);
       }
     }
 
@@ -344,7 +348,8 @@ function Products() {
           ) : null}
 
           <Card sectioned subdued>
-            <div className="orders-table-panel">
+            
+              <div className="orders-table-panel">
               <div className="orders-table-toolbar">
                 <div className="orders-tabs">
                   {[
@@ -428,6 +433,7 @@ function Products() {
                 </table>
               </div>
             </div>
+            
           </Card>
         </section>
       </div>

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import LionExSideNav from "../components/LionExSideNav";
 import LionExTopBar from "../components/LionExTopBar";
 import Footer from "../components/Footer";
+ 
 import { useAuthenticatedFetch } from "../hooks/useAuthenticatedFetch";
 import "../App.css";
 
@@ -140,9 +141,13 @@ export default function LinkStore() {
           </div>
 
           <div className="dashboard-link-body">
-
-            {linkStatus.loading || !linkStatus.linked ? (
-              <div className="dashboard-link-form">
+            
+              {linkStatus.linked ? (
+                <Banner status="success">
+                  <p>This Store is connected to the LionEx Courier.</p>
+                </Banner>
+              ) : (
+                <div className="dashboard-link-form">
             <div className="dashboard-link-info">
               <div className="dashboard-link-info__icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -192,13 +197,8 @@ export default function LinkStore() {
                   This token grants LionEx secure access to your order data.
                 </div>
               </div>
-            ) : (
-              <Banner status="success">
-                <p>
-                  This Store is connected to the LionEx Courier.
-                </p>
-              </Banner>
             )}
+          
 
             {error ? (
               <Banner status="critical">

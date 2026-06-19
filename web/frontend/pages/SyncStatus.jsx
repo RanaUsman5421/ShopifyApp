@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import LionExSideNav from "../components/LionExSideNav";
 import LionExTopBar from "../components/LionExTopBar";
+ 
 import { useAuthenticatedFetch } from "../hooks/useAuthenticatedFetch";
 import { ORDER_SYNC_COMPLETED_EVENT, triggerOrderSync } from "../utils/orderSync";
 
@@ -114,6 +115,7 @@ export default function SyncStatus() {
   const [syncing, setSyncing] = useState(false);
   const [eventLogs, setEventLogs] = useState([]);
   const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -180,6 +182,10 @@ export default function SyncStatus() {
             countdown: "--:--",
             syncProgress: 0,
           }));
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
         }
       }
     }
@@ -285,69 +291,71 @@ export default function SyncStatus() {
           </article>
         </section>
 
-        <section className="lionex-log-card">
-          <header>
-            <div>
-              <h3>Sync Event History</h3>
+        
+          <section className="lionex-log-card">
+            <header>
+              <div>
+                <h3>Sync Event History</h3>
+              </div>
+            </header>
+            <div className="lionex-log-table-wrap" style={{ overflowX: 'hidden' }}>
+              <table className="lionex-log-table" style={{ tableLayout: 'fixed', width: '100%' }}>
+                <thead>
+                  <tr><th>Time</th><th>Event Type</th><th>Name</th><th>Message</th></tr>
+                </thead>
+                <tbody>
+                  {pagedLogs.map(([time, icon, type, message, status, name]) => (
+                    <tr className={status === "Warning" ? "warning" : ""} key={`${time}-${type}-${name}`}>
+                      <td style={{ whiteSpace: 'nowrap', width: '85px' }}>{time}</td>
+                      <td style={{ whiteSpace: 'nowrap', width: '140px' }}><span><Icon>{icon}</Icon>{type}</span></td>
+                      <td style={{ whiteSpace: 'nowrap', width: '180px' }}>{name}</td>
+                      <td style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{message}</td>
+                      <td style={{ whiteSpace: 'nowrap', width: '110px' }}><strong className={status === "Warning" ? "error" : ""}>{status}</strong></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </header>
-          <div className="lionex-log-table-wrap" style={{ overflowX: 'hidden' }}>
-            <table className="lionex-log-table" style={{ tableLayout: 'fixed', width: '100%' }}>
-              <thead>
-                <tr><th>Time</th><th>Event Type</th><th>Name</th><th>Message</th></tr>
-              </thead>
-              <tbody>
-                {pagedLogs.map(([time, icon, type, message, status, name]) => (
-                  <tr className={status === "Warning" ? "warning" : ""} key={`${time}-${type}-${name}`}>
-                    <td style={{ whiteSpace: 'nowrap', width: '85px' }}>{time}</td>
-                    <td style={{ whiteSpace: 'nowrap', width: '140px' }}><span><Icon>{icon}</Icon>{type}</span></td>
-                    <td style={{ whiteSpace: 'nowrap', width: '180px' }}>{name}</td>
-                    <td style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{message}</td>
-                    <td style={{ whiteSpace: 'nowrap', width: '110px' }}><strong className={status === "Warning" ? "error" : ""}>{status}</strong></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <footer>
-            <p>Showing {startIndex}-{endIndex} of {displayLogs.length.toLocaleString()} entries</p>
-            <nav>
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                disabled={currentPage === 0}
-                style={{ background: 'transparent', boxShadow: 'none', borderColor: 'transparent' }}
-              >
-                Previous
-              </button>
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
-                disabled={currentPage >= maxPage}
-                style={{ background: 'transparent', boxShadow: 'none', borderColor: 'transparent' }}
-              >
-                Next
-              </button>
-            </nav>
-          </footer>
-        </section>
+            <footer>
+              <p>Showing {startIndex}-{endIndex} of {displayLogs.length.toLocaleString()} entries</p>
+              <nav>
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={currentPage === 0}
+                  style={{ background: 'transparent', boxShadow: 'none', borderColor: 'transparent' }}
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
+                  disabled={currentPage >= maxPage}
+                  style={{ background: 'transparent', boxShadow: 'none', borderColor: 'transparent' }}
+                >
+                  Next
+                </button>
+              </nav>
+            </footer>
+          </section>
 
-        <section className="lionex-image-grid">
-          <article>
-            <img alt="E-commerce packages" src="https://news.mit.edu/sites/default/files/images/202110/MIT-Wise-Systems-01.jpg" />
-            <div>
-              <h4>Order Sync & Dispatch</h4>
-              <p>Real-time import of Shopify orders into LionEx so shipments can be created and dispatched automatically.</p>
-            </div>
-          </article>
-          <article>
-            <img alt="Courier delivery van" src="https://plus.unsplash.com/premium_photo-1681488262364-8aeb1b6aac56?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZSUyMGNvbW1lcmNlfGVufDB8fDB8fHww" />
-            <div>
-              <h4>Courier Integration</h4>
-              <p>Connect multiple carriers to automatically generate shipping labels, track deliveries, and surface status updates in your store.</p>
-            </div>
-          </article>
-        </section>
+          <section className="lionex-image-grid">
+            <article>
+              <img alt="E-commerce packages" src="https://news.mit.edu/sites/default/files/images/202110/MIT-Wise-Systems-01.jpg" />
+              <div>
+                <h4>Order Sync & Dispatch</h4>
+                <p>Real-time import of Shopify orders into LionEx so shipments can be created and dispatched automatically.</p>
+              </div>
+            </article>
+            <article>
+              <img alt="Courier delivery van" src="https://plus.unsplash.com/premium_photo-1681488262364-8aeb1b6aac56?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZSUyMGNvbW1lcmNlfGVufDB8fDB8fHww" />
+              <div>
+                <h4>Courier Integration</h4>
+                <p>Connect multiple carriers to automatically generate shipping labels, track deliveries, and surface status updates in your store.</p>
+              </div>
+            </article>
+          </section>
+        
       </main>
       <Footer />
     </div>

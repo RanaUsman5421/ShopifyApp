@@ -2,6 +2,7 @@
 import LionExSideNav from "../components/LionExSideNav";
 import LionExTopBar from "../components/LionExTopBar";
 import Footer from "../components/Footer";
+ 
 import { useAuthenticatedFetch } from "../hooks/useAuthenticatedFetch";
 import { ORDER_SYNC_COMPLETED_EVENT } from "../utils/orderSync";
 
@@ -470,35 +471,30 @@ export default function LionExOrdersPage() {
               </div>
             </div>
 
-            <div className="lionex-orders-table-scroll">
-              <table className="lionex-orders-table">
-                <thead>
-                  <tr>
-                    <th>
-                      <input
-                        type="checkbox"
-                        checked={allPagedSelected}
-                        onChange={togglePageOrders}
-                        aria-label="Select visible orders"
-                      />
-                    </th>
-                    <th>Order</th>
-                    <th>Date</th>
-                    <th>Customer</th>
-                    <th>Payment status</th>
-                    <th>Fulfillment status</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {isLoading ? (
+            
+              <div className="lionex-orders-table-scroll">
+                <table className="lionex-orders-table">
+                  <thead>
                     <tr>
-                      <td className="lionex-orders-empty" colSpan="8">
-                        Loading orders...
-                      </td>
+                      <th>
+                        <input
+                          type="checkbox"
+                          checked={allPagedSelected}
+                          onChange={togglePageOrders}
+                          aria-label="Select visible orders"
+                        />
+                      </th>
+                      <th>Order</th>
+                      <th>Date</th>
+                      <th>Customer</th>
+                      <th>Payment status</th>
+                      <th>Fulfillment status</th>
+                      <th>Total</th>
                     </tr>
-                  ) : pagedOrders.length > 0 ? (
-                    pagedOrders.map((order) => {
+                  </thead>
+                  <tbody>
+                    {pagedOrders.length > 0 ? (
+                      pagedOrders.map((order) => {
                       const orderKey = String(order.id || order.shopifyOrderId || getOrderName(order));
                       const paymentStatus = getPaymentStatus(order);
                       const fulfillmentStatus = getFulfillmentStatus(order);
@@ -544,6 +540,7 @@ export default function LionExOrdersPage() {
                 </tbody>
               </table>
             </div>
+          
 
             <div className="lionex-orders-pagination">
               <p>

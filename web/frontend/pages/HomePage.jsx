@@ -4,6 +4,7 @@ import LionExTopBar, { MaterialIcon, SyncButton } from "../components/LionExTopB
 import Footer from "../components/Footer";
 import { useAuthenticatedFetch } from "../hooks/useAuthenticatedFetch";
 import { ORDER_SYNC_COMPLETED_EVENT } from "../utils/orderSync";
+import { NavLink } from "react-router-dom";
 
 const DASHBOARD_REFRESH_INTERVAL_MS = 30000;
 
@@ -25,6 +26,19 @@ async function fetchOptionalJson(authenticatedFetch, url, fallbackValue, options
   } catch (error) {
     return fallbackValue;
   }
+}
+
+async function fetchDashboardLinkStatus(authenticatedFetch) {
+  const statusResponse = await fetchOptionalJson(
+    authenticatedFetch,
+    "/api/dashboard/link-status",
+    { success: true, linked: false }
+  );
+
+  return {
+    loading: false,
+    linked: Boolean(statusResponse?.linked),
+  };
 }
 
 function getStoreFromUrl() {
@@ -154,6 +168,7 @@ export default function LionExHomePage() {
   const [ordersFetchedCount, setOrdersFetchedCount] = useState(0);
   const [ordersSavedLastSync, setOrdersSavedLastSync] = useState(0);
   const [syncCompletionPercentage, setSyncCompletionPercentage] = useState(0);
+  const [linkStatus, setLinkStatus] = useState({ loading: true, linked: false });
 
   useEffect(() => {
     let isMounted = true;
@@ -161,7 +176,7 @@ export default function LionExHomePage() {
     async function loadDashboardStats() {
       try {
         const urlStore = getStoreFromUrl();
-        const [storeInfoResponse, productsResponse, ordersResponse] = await Promise.all([
+        const [storeInfoResponse, productsResponse, ordersResponse, dashboardLinkStatus] = await Promise.all([
           fetchOptionalJson(authenticatedFetch, "/api/store/info", {
             success: true,
             data: {
@@ -179,6 +194,7 @@ export default function LionExHomePage() {
             data: [],
             count: 0,
           }),
+          fetchDashboardLinkStatus(authenticatedFetch),
         ]);
 
         const storeName =
@@ -246,6 +262,7 @@ export default function LionExHomePage() {
           storeName,
           isLoading: false,
         });
+        setLinkStatus(dashboardLinkStatus);
       } catch (error) {
         if (!isMounted) {
           return;
@@ -264,6 +281,7 @@ export default function LionExHomePage() {
         setOrdersFetchedCount(0);
         setOrdersSavedLastSync(0);
         setSyncCompletionPercentage(0);
+        setLinkStatus({ loading: false, linked: false });
       }
     }
 
@@ -362,6 +380,45 @@ export default function LionExHomePage() {
               <p>Manage your E-Commerce and Shopify synchronization in one place.</p>
             </div>
           </section>
+
+            {!linkStatus.loading && !linkStatus.linked ? (
+              <div
+                className="lionex-card"
+                style={{
+                  borderLeft: "4px solid #f08718",
+                  backgroundColor: "#fff7eb",
+                  padding: "1rem",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
+                  <div style={{ minWidth: "36px", lineHeight: 0 }}>
+                    <MaterialIcon>warning</MaterialIcon>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{ margin: 0, fontSize: "1rem" }}>Store not linked to LionEx</h3>
+                    <p style={{ margin: "0.5rem 0 0" }}>
+                      This Shopify store is not connected to LionEx. Go to the LionEx Dashboard, generate your token in LionEx, and link the store to enable auto orders booking.
+                    </p>
+                  </div>
+                  <NavLink
+                    to="/linkStore"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "0.75rem 1rem",
+                      background: "#057a70",
+                      color: "white",
+                      textDecoration: "none",
+                      borderRadius: "0.375rem",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Link Store
+                  </NavLink>
+                </div>
+              </div>
+            ) : null}
 
           <section className="lionex-metrics" aria-label="Dashboard metrics">
             {metrics.map((metric) => (
@@ -494,9 +551,10 @@ export default function LionExHomePage() {
               ))}
             </div>
           </section>
-        </div>
+        
+      </div>
 
-        <Footer />
+      <Footer />
       </main>
     </div>
   );
