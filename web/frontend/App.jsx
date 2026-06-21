@@ -1,6 +1,4 @@
-import { BrowserRouter } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { NavigationMenu } from "@shopify/app-bridge-react";
+import { BrowserRouter, useLocation } from "react-router-dom";
 import Routes from "./Routes";
 import LionExSideNav from "./components/LionExSideNav";
 
@@ -14,26 +12,25 @@ export default function App() {
   const pages = import.meta.globEager("./pages/**/!(*.test.[jt]sx)*.([jt]sx)");
 
   return (
-    <PolarisProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <PolarisProvider>
         <AppBridgeProvider>
           <QueryProvider>
             <AppContent pages={pages} />
           </QueryProvider>
         </AppBridgeProvider>
-      </BrowserRouter>
-    </PolarisProvider>
+      </PolarisProvider>
+    </BrowserRouter>
   );
 }
 
 function AppContent({ pages }) {
   const location = useLocation();
-  const shelllessRoutes = ["/", "/homepage", "/orders", "/linkStore", "/syncstatus", "/configuration" ];
+  const shelllessRoutes = ["/", "/homepage", "/orders", "/linkStore", "/syncstatus", "/configuration"];
   const isShelllessRoute = shelllessRoutes.includes(location.pathname.toLowerCase());
 
   return (
     <>
-      <NavigationMenu navigationLinks={[]} />
       {isShelllessRoute ? (
         <Routes pages={pages} />
       ) : (

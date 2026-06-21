@@ -1,43 +1,46 @@
-import { authenticatedFetch } from "@shopify/app-bridge/utilities";
-import { useAppBridge } from "@shopify/app-bridge-react";
-import { Redirect } from "@shopify/app-bridge/actions";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 
 /**
  * A hook that returns an auth-aware fetch function.
- * @desc The returned fetch function that matches the browser's fetch API
- * See: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+ * @desc The returned fetch function matches the browser's fetch API.
  * It will provide the following functionality:
  *
- * 1. Add a `X-Shopify-Access-Token` header to the request.
+ * 1. Add a Shopify session token to the request.
  * 2. Check response for `X-Shopify-API-Request-Failure-Reauthorize` header.
  * 3. Redirect the user to the reauthorization URL if the header is present.
  *
  * @returns {Function} fetch function
  */
 export function useAuthenticatedFetch() {
-  const app = useAppBridge();
-  const fetchFunction = useMemo(() => authenticatedFetch(app), [app]);
+  return useCallback(async (uri, options = {}) => {
+    const headers = new Headers(options.headers || {});
 
-  return useCallback(async (uri, options) => {
-    const response = await fetchFunction(uri, options);
-    checkHeadersForReauthorization(response.headers, app);
+    if (window.shopify?.idToken) {
+      const token = await window.shopify.idToken();
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    const response = await fetch(uri, {
+      ...options,
+      headers,
+    });
+
+    checkHeadersForReauthorization(response.headers);
     return response;
-  }, [app, fetchFunction]);
+  }, []);
 }
 
-function checkHeadersForReauthorization(headers, app) {
+function checkHeadersForReauthorization(headers) {
   if (headers.get("X-Shopify-API-Request-Failure-Reauthorize") === "1") {
     const authUrlHeader =
       headers.get("X-Shopify-API-Request-Failure-Reauthorize-Url") ||
       `/api/auth`;
 
-    const redirect = Redirect.create(app);
-    redirect.dispatch(
-      Redirect.Action.REMOTE,
+    window.open(
       authUrlHeader.startsWith("/")
         ? `https://${window.location.host}${authUrlHeader}`
-        : authUrlHeader
+        : authUrlHeader,
+      "_top"
     );
   }
 }

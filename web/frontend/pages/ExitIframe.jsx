@@ -1,16 +1,13 @@
-import { Redirect } from "@shopify/app-bridge/actions";
-import { useAppBridge, Loading } from "@shopify/app-bridge-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Banner, Layout, Page } from "@shopify/polaris";
+import { Banner, Layout, Page, Spinner } from "@shopify/polaris";
 
 export default function ExitIframe() {
-  const app = useAppBridge();
   const { search } = useLocation();
   const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
-    if (!!app && !!search) {
+    if (search) {
       const params = new URLSearchParams(search);
       const redirectUri = params.get("redirectUri");
       const url = new URL(decodeURIComponent(redirectUri));
@@ -19,16 +16,12 @@ export default function ExitIframe() {
         [location.hostname, "admin.shopify.com"].includes(url.hostname) ||
         url.hostname.endsWith(".myshopify.com")
       ) {
-        const redirect = Redirect.create(app);
-        redirect.dispatch(
-          Redirect.Action.REMOTE,
-          decodeURIComponent(redirectUri)
-        );
+        window.open(decodeURIComponent(redirectUri), "_top");
       } else {
         setShowWarning(true);
       }
     }
-  }, [app, search, setShowWarning]);
+  }, [search, setShowWarning]);
 
   return showWarning ? (
     <Page narrowWidth>
@@ -43,6 +36,6 @@ export default function ExitIframe() {
       </Layout>
     </Page>
   ) : (
-    <Loading />
+    <Spinner accessibilityLabel="Loading" size="large" />
   );
 }

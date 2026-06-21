@@ -1,20 +1,31 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "7ef52204f1f0ce119cdc8ede2c58fa59"
-name = "LionEx Courier 2"
-application_url = "https://shopifyapp-xif5.onrender.com"
+client_id = "354acfab3ad60b63ae6037165d3aedd8"
+name = "LionEx Courier"
+application_url = "https://lionexcourier.onrender.com"
 embedded = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_orders,read_products,write_products,read_customers"
+scopes = "read_orders,read_products,write_orders,read_customers"
 
 [auth]
-redirect_urls = [ "https://shopifyapp-xif5.onrender.com/api/auth" ]
+redirect_urls = [ "https://lionexcourier.onrender.com/api/auth" ]
 
 [webhooks]
 api_version = "2026-07"
 
+[[webhooks.subscriptions]]
+uri = "/api/webhooks"
+compliance_topics = ["customers/data_request"]
+
+[[webhooks.subscriptions]]
+uri = "/api/webhooks"
+compliance_topics = ["customers/redact"]
+
+[[webhooks.subscriptions]]
+uri = "/api/webhooks"
+compliance_topics = ["shop/redact"]
+
 [build]
-include_config_on_deploy = true
 automatically_update_urls_on_dev = true
