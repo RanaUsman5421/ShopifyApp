@@ -72,6 +72,37 @@ function emptySaveResult() {
   return { savedCount: 0, matchedCount: 0, modifiedCount: 0, upsertedCount: 0 };
 }
 
+const ORDER_INDEXES = [
+  {
+    key: { shopDomain: 1, shopifyOrderId: 1 },
+    name: "shopDomain_1_shopifyOrderId_1",
+    unique: true,
+    partialFilterExpression: {
+      shopDomain: { $type: "string" },
+      shopifyOrderId: { $type: "number" },
+    },
+  },
+  {
+    key: { storeId: 1, shopifyOrderId: 1 },
+    name: "storeId_1_shopifyOrderId_1",
+    unique: true,
+    partialFilterExpression: {
+      storeId: { $type: "objectId" },
+      shopifyOrderId: { $type: "number" },
+    },
+  },
+  { key: { storeId: 1, createdAt: -1 }, name: "storeId_1_createdAt_-1" },
+  { key: { shopDomain: 1, createdAt: -1 }, name: "shopDomain_1_createdAt_-1" },
+];
+
+function comparableIndexSpec(index) {
+  return JSON.stringify({
+    key: index.key,
+    unique: Boolean(index.unique),
+    partialFilterExpression: index.partialFilterExpression || null,
+  });
+}
+
 function getStoreLookupFilters(storeName, shopDomain) {
   const filters = [];
 
@@ -97,28 +128,18 @@ async function findStoreDocument(db, storeName, shopDomain) {
 }
 
 async function ensureOrderIndexes(collection) {
-  await collection.createIndexes([
-    {
-      key: { shopDomain: 1, shopifyOrderId: 1 },
-      name: "shopDomain_1_shopifyOrderId_1",
-      unique: true,
-      partialFilterExpression: {
-        shopDomain: { $type: "string" },
-        shopifyOrderId: { $type: "number" },
-      },
-    },
-    {
-      key: { storeId: 1, shopifyOrderId: 1 },
-      name: "storeId_1_shopifyOrderId_1",
-      unique: true,
-      partialFilterExpression: {
-        storeId: { $exists: true, $ne: null },
-        shopifyOrderId: { $type: "number" },
-      },
-    },
-    { key: { storeId: 1, createdAt: -1 }, name: "storeId_1_createdAt_-1" },
-    { key: { shopDomain: 1, createdAt: -1 }, name: "shopDomain_1_createdAt_-1" },
-  ]);
+  const existingIndexes = await collection.indexes();
+  const existingByName = new Map(existingIndexes.map((index) => [index.name, index]));
+
+  for (const index of ORDER_INDEXES) {
+    const existingIndex = existingByName.get(index.name);
+
+    if (existingIndex && comparableIndexSpec(existingIndex) !== comparableIndexSpec(index)) {
+      await collection.dropIndex(index.name);
+    }
+  }
+
+  await collection.createIndexes(ORDER_INDEXES);
 }
 
 function buildOrderFilter(order, store, normalizedShopDomain, normalizedStoreName) {
