@@ -10,7 +10,7 @@ embedded = true
 scopes = "read_orders,read_products,write_orders,read_customers"
 
 [auth]
-redirect_urls = [ "https://lionexcourier.onrender.com/api/auth" ]
+redirect_urls = [ "https://lionexcourier.onrender.com/api/auth/callback" ]
 
 [webhooks]
 api_version = "2026-07"

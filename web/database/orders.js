@@ -1,8 +1,9 @@
-// @ts-nocheck
+﻿// @ts-nocheck
+import { ObjectId } from "mongodb";
+
 import { ORDERS_COLLECTION } from "./config.js";
 import { connectToMongoDB } from "./connection.js";
 
-// @ts-ignore
 function mapOrderForMongo(order) {
   const address =
     order.shipping_address ||
@@ -11,10 +12,10 @@ function mapOrderForMongo(order) {
     {};
 
   return {
-    shopifyOrderId: order.id,
-    adminGraphqlApiId: order.admin_graphql_api_id,
-    orderName: order.name,
-    orderNumber: order.order_number,
+    shopifyOrderId: Number(order.id),
+    adminGraphqlApiId: order.admin_graphql_api_id || null,
+    orderName: order.name || null,
+    orderNumber: order.order_number ?? null,
     customerName:
       address.name ||
       [order.customer?.first_name, order.customer?.last_name].filter(Boolean).join(" ") ||
@@ -36,8 +37,8 @@ function mapOrderForMongo(order) {
     itemCount: order.item_count ?? null,
     totalPrice: order.total_price || null,
     currency: order.currency || null,
-    createdAt: order.created_at || null,
-    updatedAt: order.updated_at || null,
+    createdAt: order.created_at ? new Date(order.created_at) : null,
+    updatedAt: order.updated_at ? new Date(order.updated_at) : null,
   };
 }
 
@@ -71,7 +72,77 @@ function emptySaveResult() {
   return { savedCount: 0, matchedCount: 0, modifiedCount: 0, upsertedCount: 0 };
 }
 
-// @ts-ignore
+function getStoreLookupFilters(storeName, shopDomain) {
+  const filters = [];
+
+  if (shopDomain) {
+    filters.push({ shopDomain });
+  }
+
+  if (storeName) {
+    filters.push({ storeName });
+  }
+
+  return filters;
+}
+
+async function findStoreDocument(db, storeName, shopDomain) {
+  const filters = getStoreLookupFilters(storeName, shopDomain);
+
+  if (filters.length === 0) {
+    return null;
+  }
+
+  return db.collection("stores").findOne(filters.length === 1 ? filters[0] : { $or: filters });
+}
+
+async function ensureOrderIndexes(collection) {
+  await collection.createIndexes([
+    {
+      key: { shopDomain: 1, shopifyOrderId: 1 },
+      name: "shopDomain_1_shopifyOrderId_1",
+      unique: true,
+      partialFilterExpression: {
+        shopDomain: { $type: "string" },
+        shopifyOrderId: { $type: "number" },
+      },
+    },
+    {
+      key: { storeId: 1, shopifyOrderId: 1 },
+      name: "storeId_1_shopifyOrderId_1",
+      unique: true,
+      partialFilterExpression: {
+        storeId: { $exists: true, $ne: null },
+        shopifyOrderId: { $type: "number" },
+      },
+    },
+    { key: { storeId: 1, createdAt: -1 }, name: "storeId_1_createdAt_-1" },
+    { key: { shopDomain: 1, createdAt: -1 }, name: "shopDomain_1_createdAt_-1" },
+  ]);
+}
+
+function buildOrderFilter(order, store, normalizedShopDomain, normalizedStoreName) {
+  if (store?._id) {
+    const filters = [{ storeId: store._id, shopifyOrderId: order.shopifyOrderId }];
+
+    if (normalizedShopDomain) {
+      filters.push({ shopDomain: normalizedShopDomain, shopifyOrderId: order.shopifyOrderId });
+    }
+
+    if (normalizedStoreName) {
+      filters.push({ storeName: normalizedStoreName, shopifyOrderId: order.shopifyOrderId });
+    }
+
+    return { $or: filters };
+  }
+
+  if (normalizedShopDomain) {
+    return { shopDomain: normalizedShopDomain, shopifyOrderId: order.shopifyOrderId };
+  }
+
+  return { storeName: normalizedStoreName, shopifyOrderId: order.shopifyOrderId };
+}
+
 export async function saveOrdersToMongoDB(orders, storeIdentity) {
   const { storeName: normalizedStoreName, shopDomain: normalizedShopDomain } =
     normalizeStoreIdentity(storeIdentity);
@@ -84,74 +155,52 @@ export async function saveOrdersToMongoDB(orders, storeIdentity) {
     return emptySaveResult();
   }
 
-  const db = await connectToMongoDB();
-  const collection = db.collection(ORDERS_COLLECTION);
-
   const mappedOrders = orders
-    .filter((order) => order?.id)
+    .filter((order) => order?.id && Number.isFinite(Number(order.id)))
     .map((order) => mapOrderForMongo(order));
 
   if (mappedOrders.length === 0) {
     return emptySaveResult();
   }
 
-  const filters = [{ storeName: normalizedStoreName }];
+  const db = await connectToMongoDB();
+  const collection = db.collection(ORDERS_COLLECTION);
+  const store = await findStoreDocument(db, normalizedStoreName, normalizedShopDomain);
+  const now = new Date();
 
-  if (normalizedShopDomain) {
-    filters.unshift({ shopDomain: normalizedShopDomain });
-  }
+  await ensureOrderIndexes(collection);
 
-  const existingStore = await collection.findOne(filters.length === 1 ? filters[0] : { $or: filters });
-  const existingOrders = Array.isArray(existingStore?.orders) ? existingStore.orders : [];
-  const existingOrdersById = new Map(
-    existingOrders
-      .filter((order) => order?.shopifyOrderId)
-      .map((order) => [String(order.shopifyOrderId), order])
-  );
-
-  const mergedOrders = mappedOrders.map((order) => {
-    const existingOrder = existingOrdersById.get(String(order.shopifyOrderId));
-
-    if (!existingOrder) {
-      return order;
-    }
-
-    return {
-      ...existingOrder,
-      ...Object.fromEntries(Object.entries(order).filter(([, value]) => value != null && value !== "")),
-    };
-  });
-
-  const result = await collection.updateOne(
-    existingStore?._id ? { _id: existingStore._id } : filters.length === 1 ? filters[0] : { $or: filters },
-    {
-      $set: {
-        storeName: normalizedStoreName,
-        ...(normalizedShopDomain ? { shopDomain: normalizedShopDomain } : {}),
-        orders: mergedOrders,
-        updatedAt: new Date(),
-      },
-      $setOnInsert: {
-        settings: {
-          defaultCourier: "M&P",
-          defaultWeight: "0.5",
-          orderBooking: "Manual",
+  const result = await collection.bulkWrite(
+    mappedOrders.map((order) => ({
+      updateOne: {
+        filter: buildOrderFilter(order, store, normalizedShopDomain, normalizedStoreName),
+        update: {
+          $set: {
+            ...order,
+            storeId: store?._id || null,
+            dashboardUserId: store?.dashboardUserId || null,
+            storeName: normalizedStoreName,
+            ...(normalizedShopDomain ? { shopDomain: normalizedShopDomain } : {}),
+            syncedAt: now,
+          },
+          $setOnInsert: {
+            insertedAt: now,
+          },
         },
-        createdAt: new Date(),
+        upsert: true,
       },
-    },
-    { upsert: true }
+    })),
+    { ordered: false }
   );
 
   return {
-    savedCount: mergedOrders.length,
+    savedCount: mappedOrders.length,
     matchedCount: result.matchedCount || 0,
     modifiedCount: result.modifiedCount || 0,
     upsertedCount: result.upsertedCount || 0,
   };
 }
 
-// @ts-ignore
 export async function getStoreOrdersFromMongoDB(storeName) {
   if (!storeName || typeof storeName !== "string") {
     throw new Error("A valid store name is required to fetch orders.");
@@ -178,11 +227,43 @@ export async function getStoreOrdersFromMongoDB(storeName) {
 
   const db = await connectToMongoDB();
   const collection = db.collection(ORDERS_COLLECTION);
-
-  return collection.findOne({
+  const store = await db.collection("stores").findOne({
     $or: [
       { storeName: { $in: storeNameCandidates } },
       { shopDomain: { $in: shopDomainCandidates } },
     ],
   });
+  const filters = [];
+
+  if (store?._id instanceof ObjectId) {
+    filters.push({ storeId: store._id });
+  }
+
+  filters.push(
+    { storeName: { $in: storeNameCandidates } },
+    { shopDomain: { $in: shopDomainCandidates } }
+  );
+
+  const query = { $or: filters };
+  const orders = await collection
+    .find({ ...query, shopifyOrderId: { $exists: true } })
+    .sort({ createdAt: -1, orderNumber: -1 })
+    .toArray();
+
+  if (orders.length > 0) {
+    return {
+      storeName: store?.storeName || orders[0].storeName || normalizedStoreName,
+      shopDomain: store?.shopDomain || orders[0].shopDomain || null,
+      storeId: store?._id || orders[0].storeId || null,
+      orders,
+    };
+  }
+
+  const legacyRecord = await collection.findOne({ ...query, orders: { $type: "array" } });
+
+  if (legacyRecord) {
+    return legacyRecord;
+  }
+
+  return null;
 }

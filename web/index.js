@@ -266,7 +266,6 @@ async function linkDashboardUserDirectly({ token, shopDomain, storeName, shopify
           defaultWeight: "0.5",
           orderBooking: "Manual",
         },
-        orders: [],
         createdAt: linkedAt,
       },
     },
