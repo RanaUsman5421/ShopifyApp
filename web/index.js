@@ -131,6 +131,48 @@ function postJson(url, payload) {
   });
 }
 
+function getJson(url) {
+  return new Promise((resolve, reject) => {
+    const parsedUrl = new URL(url);
+    const transport = parsedUrl.protocol === "https:" ? https : http;
+
+    const request = transport.request(
+      {
+        method: "GET",
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port || (parsedUrl.protocol === "https:" ? 443 : 80),
+        path: `${parsedUrl.pathname}${parsedUrl.search}`,
+      },
+      (response) => {
+        let responseBody = "";
+
+        response.setEncoding("utf8");
+        response.on("data", (chunk) => {
+          responseBody += chunk;
+        });
+        response.on("end", () => {
+          let data = null;
+
+          try {
+            const trimmedBody = responseBody?.trim();
+            data = trimmedBody ? JSON.parse(trimmedBody) : null;
+          } catch (error) {
+            return reject(new Error("Dashboard backend returned invalid JSON."));
+          }
+
+          resolve({
+            ok: response.statusCode >= 200 && response.statusCode < 300,
+            status: response.statusCode,
+            data,
+          });
+        });
+      }
+    );
+
+    request.on("error", reject);
+    request.end();
+  });
+}
 function getDashboardResponseError(response) {
   return (
     response?.data?.error ||
@@ -258,14 +300,13 @@ async function linkDashboardUserDirectly({ token, shopDomain, storeName, shopify
         shopDomain: normalizedShopDomain,
         storeName: linkedStore.storeName,
         dashboardUserId: user._id,
+        "ShopifyStoreSettings.username": user.username || null,
         updatedAt: linkedAt,
       },
       $setOnInsert: {
-        settings: {
-          defaultCourier: "M&P",
-          defaultWeight: "0.5",
-          orderBooking: "Manual",
-        },
+        "ShopifyStoreSettings.defaultCourier": "M&P",
+        "ShopifyStoreSettings.defaultWeight": "0.5",
+        "ShopifyStoreSettings.orderBooking": "Manual",
         createdAt: linkedAt,
       },
     },
@@ -487,6 +528,11 @@ async function runShopifyGraphql(session, query, variables = {}) {
   const client = getGraphqlClient(activeSession);
   const response = await client.request(query, { variables });
 
+  if (response?.errors && Array.isArray(response.errors) && response.errors.length > 0) {
+    console.error("GraphQL Errors:", response.errors);
+    throw new Error(`GraphQL Error: ${response.errors.map(e => e.message).join(", ")}`);
+  }
+
   return response?.data || {};
 }
 
@@ -509,8 +555,41 @@ function mapGraphqlAddress(address) {
   };
 }
 
+function normalizeGraphqlWeight(weight) {
+  const value = weight?.value ?? weight?.weight ?? null;
+  const numericValue = Number(value);
+
+  return {
+    weight: Number.isFinite(numericValue) ? numericValue : null,
+    weightUnit: weight?.unit || weight?.weightUnit || null,
+  };
+}
 function mapGraphqlOrder(order) {
   const totalPrice = order?.totalPriceSet?.shopMoney;
+
+  // Safely extract lineItems with weight information
+  const lineItems = Array.isArray(order?.lineItems?.nodes)
+    ? order.lineItems.nodes.map((item) => {
+        const itemWeight = normalizeGraphqlWeight(item?.weight);
+
+        return {
+          id: item?.id || null,
+          title: item?.title || null,
+          quantity: item?.quantity || 0,
+          weight: itemWeight.weight,
+          weightUnit: itemWeight.weightUnit || "kg",
+          variant: item?.variant
+            ? {
+                id: item.variant.id || null,
+                sku: item.variant.sku || item?.sku || null,
+                title: item.variant.title || item?.variantTitle || null,
+                weight: itemWeight.weight,
+                weightUnit: itemWeight.weightUnit || "kg",
+              }
+            : null,
+        };
+      })
+    : [];
 
   return {
     id: order?.legacyResourceId || order?.id,
@@ -536,6 +615,7 @@ function mapGraphqlOrder(order) {
     item_count: order?.currentSubtotalLineItemsQuantity ?? null,
     total_price: totalPrice?.amount || null,
     currency: totalPrice?.currencyCode || null,
+    lineItems: lineItems,
     created_at: order?.createdAt || null,
     updated_at: order?.updatedAt || null,
   };
@@ -603,6 +683,134 @@ async function fetchOrdersCount(session) {
 }
 
 async function fetchOrders(session) {
+  try {
+    const data = await runShopifyGraphql(
+      session,
+      `#graphql
+        query Orders {
+          orders(first: 250, sortKey: CREATED_AT, reverse: true) {
+            nodes {
+              id
+              legacyResourceId
+              name
+              email
+              phone
+              createdAt
+              updatedAt
+              displayFinancialStatus
+              displayFulfillmentStatus
+              currentSubtotalLineItemsQuantity
+              totalPriceSet {
+                shopMoney {
+                  amount
+                  currencyCode
+                }
+              }
+              customer {
+                firstName
+                lastName
+                defaultAddress {
+                  name
+                  address1
+                  address2
+                  city
+                  province
+                  provinceCode
+                  zip
+                  country
+                  countryCodeV2
+                  phone
+                }
+              }
+              shippingAddress {
+                name
+                address1
+                address2
+                city
+                province
+                provinceCode
+                zip
+                country
+                countryCodeV2
+                phone
+              }
+              billingAddress {
+                name
+                address1
+                address2
+                city
+                province
+                provinceCode
+                zip
+                country
+                countryCodeV2
+                phone
+              }
+              lineItems(first: 250) {
+                nodes {
+                  id
+                  title
+                  sku
+                  quantity
+                  variantTitle
+                  weight {
+                    value
+                    unit
+                  }
+                  variant {
+                    id
+                    sku
+                    title
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+    );
+
+    console.log("📊 GraphQL Orders Response Data:", data);
+
+    if (!data?.orders?.nodes) {
+      console.warn("⚠️ No orders data in GraphQL response. Trying fallback query without lineItems...");
+      return await fetchOrdersFallback(session);
+    }
+
+    // Log detailed lineItems inspection
+    if (Array.isArray(data.orders.nodes) && data.orders.nodes.length > 0) {
+      const firstOrder = data.orders.nodes[0];
+      console.log("🔍 First order lineItems structure:", {
+        hasLineItems: !!firstOrder.lineItems,
+        lineItemsType: typeof firstOrder.lineItems,
+        lineItemsValue: firstOrder.lineItems,
+        hasNodes: !!firstOrder.lineItems?.nodes,
+        nodesLength: firstOrder.lineItems?.nodes?.length || 0,
+      });
+      
+      if (firstOrder.currentSubtotalLineItemsQuantity > 0 && (!firstOrder.lineItems?.nodes || firstOrder.lineItems.nodes.length === 0)) {
+        console.warn("⚠️ WARNING: Order has items (quantity:", firstOrder.currentSubtotalLineItemsQuantity, ") but lineItems.nodes is empty!");
+        console.log("📌 This may indicate a Shopify API permission issue or data access restriction");
+      }
+    }
+
+    const mappedOrders = Array.isArray(data.orders.nodes) ? data.orders.nodes.map(mapGraphqlOrder) : [];
+    console.log("✅ Successfully mapped orders:", mappedOrders.length, "orders");
+    return mappedOrders;
+  } catch (error) {
+    console.error("❌ Error in fetchOrders:", error?.message || error);
+    console.log("📌 Attempting fallback query...");
+    try {
+      return await fetchOrdersFallback(session);
+    } catch (fallbackError) {
+      console.error("❌ Fallback query also failed:", fallbackError?.message || fallbackError);
+      throw fallbackError;
+    }
+  }
+}
+
+async function fetchOrdersFallback(session) {
+  console.log("🔄 Using fallback query (without lineItems)...");
   const data = await runShopifyGraphql(
     session,
     `#graphql
@@ -671,7 +879,16 @@ async function fetchOrders(session) {
     `
   );
 
-  return Array.isArray(data.orders?.nodes) ? data.orders.nodes.map(mapGraphqlOrder) : [];
+  console.log("📊 Fallback GraphQL Response:", data);
+
+  if (!data?.orders?.nodes) {
+    console.warn("⚠️ No orders data even in fallback query");
+    return [];
+  }
+
+  const mappedOrders = Array.isArray(data.orders.nodes) ? data.orders.nodes.map(mapGraphqlOrder) : [];
+  console.log("✅ Successfully mapped orders from fallback:", mappedOrders.length, "orders");
+  return mappedOrders;
 }
 
 function getShopifyOrdersErrorMessage(error) {
@@ -878,6 +1095,19 @@ app.get("/api/orders/sync-status", async (_req, res) => {
 });
 
 
+app.get("/api/v8/track/test-auto-book", async (_req, res) => {
+  try {
+    const bookingResponse = await getJson(`${getDashboardApiUrl()}/api/v8/track/test-auto-book`);
+
+    return res.status(bookingResponse.status || 200).send(bookingResponse.data || { success: bookingResponse.ok });
+  } catch (error) {
+    console.error("Book packet proxy error:", error);
+    return res.status(500).send({
+      success: false,
+      error: error?.message || "Failed to book packets.",
+    });
+  }
+});
 // reading orders
 app.get("/api/orders/all", async (_req, res) => {
   try {
@@ -892,15 +1122,20 @@ app.get("/api/orders/all", async (_req, res) => {
 
     try {
       count = await fetchOrdersCount(res.locals.shopify.session);
+      console.log("📦 Orders count from Shopify:", count);
     } catch (countError) {
-      console.error("Failed to fetch Shopify orders count:", countError);
+      console.error("Failed to fetch Shopify orders count:", countError?.message || countError);
     }
 
     try {
       data = await fetchOrders(res.locals.shopify.session);
+      console.log("✅ Fetched orders successfully. Total orders:", data.length);
+      if (data.length > 0) {
+        console.log("📋 Sample order structure:", JSON.stringify(data[0], null, 2));
+      }
     } catch (shopifyError) {
       fetchError = getShopifyOrdersErrorMessage(shopifyError);
-      console.error("Failed to fetch orders from Shopify:", shopifyError);
+      console.error("Failed to fetch orders from Shopify:", shopifyError?.message || shopifyError);
     }
 
     return res.status(200).send({ success: true, data, count, fetchError });

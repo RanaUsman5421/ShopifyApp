@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import LionExSideNav from "../components/LionExSideNav";
 import LionExTopBar from "../components/LionExTopBar";
 import Footer from "../components/Footer";
@@ -8,7 +8,7 @@ import { ORDER_SYNC_COMPLETED_EVENT } from "../utils/orderSync";
 
 const ORDERS_REFRESH_INTERVAL_MS = 30000;
 
-const tabs = ["All", "Unfulfilled", "Unpaid", "Open", "Closed"];
+const tabs = ["All", "Unfulfilled", "Fullfilled", "Errored", "New"];
 
 async function readOptionalJsonResponse(response, fallbackValue) {
   const data = await response.json().catch(() => null);
@@ -225,19 +225,27 @@ function isClosed(order) {
 function matchesTab(order, selectedTab) {
   const payment = normalizeStatus(getPaymentStatus(order));
   const fulfillment = normalizeStatus(getFulfillmentStatus(order));
+  const bookingError = String(order.bookingError || "").trim();
+  const trackNumber = String(order.trackNumber || "").trim();
+  const bookedCourier = String(order.bookedCourier || "").trim();
 
   if (selectedTab === "All") return true;
   if (selectedTab === "Unfulfilled") {
     return fulfillment.includes("unfulfilled") || fulfillment.includes("partial") || !fulfillment;
   }
-  if (selectedTab === "Unpaid") {
-    return !payment.includes("paid");
+  if (selectedTab === "Fullfilled" || selectedTab === "Fulfilled") {
+    return fulfillment.includes("fulfilled") && !fulfillment.includes("unfulfilled");
   }
-  if (selectedTab === "Closed") {
-    return isClosed(order);
+  if (selectedTab === "Errored") {
+    return fulfillment.includes("error") || Boolean(bookingError);
   }
-  if (selectedTab === "Open") {
-    return !isClosed(order);
+  if (selectedTab === "New") {
+    return (
+      !bookingError &&
+      !trackNumber &&
+      !bookedCourier &&
+      (fulfillment.includes("unfulfilled") || !fulfillment)
+    );
   }
 
   return true;
@@ -256,6 +264,8 @@ export default function LionExOrdersPage() {
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [orderError, setOrderError] = useState("");
+  const [bookingState, setBookingState] = useState("idle");
+  const [showBookingConfirm, setShowBookingConfirm] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -428,6 +438,44 @@ export default function LionExOrdersPage() {
     });
   }
 
+  function handleBookPacket() {
+    if (bookingState !== "idle") return;
+
+    setShowBookingConfirm(true);
+  }
+
+  function cancelBookPacket() {
+    if (bookingState !== "idle") return;
+
+    setShowBookingConfirm(false);
+  }
+
+  async function confirmBookPacket() {
+    if (bookingState !== "idle") return;
+
+    setShowBookingConfirm(false);
+    setBookingState("booking");
+    setOrderError("");
+
+    try {
+      const response = await authenticatedFetch("/api/v8/track/test-auto-book");
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || data?.success === false) {
+        throw new Error(data?.error || data?.message || "Failed to book packets.");
+      }
+
+      setBookingState("finished");
+      window.setTimeout(() => setBookingState("idle"), 2000);
+    } catch (error) {
+      setOrderError(error?.message || "Failed to book packets.");
+      setBookingState("idle");
+    }
+  }
+
+  const bookingLabel =
+    bookingState === "booking" ? "Booking..." : bookingState === "finished" ? "Booked" : "Book Packet";
+  const bookingIcon = bookingState === "booking" ? "sync" : bookingState === "finished" ? "check" : "inventory_2";
   return (
     <div className="lionex-orders-page">
       <LionExSideNav activeLabel="Orders" />
@@ -443,6 +491,17 @@ export default function LionExOrdersPage() {
         <div className="lionex-orders-content">
           <div className="lionex-orders-header">
             <h2>Orders</h2>
+            <button
+              className="lionex-button lionex-button--primary"
+              type="button"
+              onClick={handleBookPacket}
+              disabled={bookingState !== "idle"}
+            >
+              <MaterialIcon className={bookingState === "booking" ? "lionex-spin" : ""}>
+                {bookingIcon}
+              </MaterialIcon>
+              {bookingLabel}
+            </button>
           </div>
 
           {orderError ? <div className="lionex-orders-error">{orderError}</div> : null}
@@ -533,7 +592,7 @@ export default function LionExOrdersPage() {
                   ) : (
                     <tr>
                       <td className="lionex-orders-empty" colSpan="8">
-                        No orders match the selected filter or search.
+                        {isLoading ? "Loading" : "No orders match the selected filter or search."}
                       </td>
                     </tr>
                   )}
@@ -544,7 +603,7 @@ export default function LionExOrdersPage() {
 
             <div className="lionex-orders-pagination">
               <p>
-                Page {currentPage + 1} of {maxPage + 1} · Showing {filteredOrders.length === 0 ? 0 : currentPage * pageSize + 1}-
+                Page {currentPage + 1} of {maxPage + 1} Showing {filteredOrders.length === 0 ? 0 : currentPage * pageSize + 1}-
                 {Math.min((currentPage + 1) * pageSize, filteredOrders.length)} of {filteredOrders.length.toLocaleString()} orders
               </p>
               <div>
@@ -567,6 +626,33 @@ export default function LionExOrdersPage() {
           </section>
         </div>
       </main>
+
+      {showBookingConfirm ? (
+        <div className="lionex-orders-modal-backdrop" role="presentation" onClick={cancelBookPacket}>
+          <div
+            aria-labelledby="book-packet-confirm-title"
+            aria-modal="true"
+            className="lionex-orders-modal"
+            role="dialog"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="lionex-orders-modal__icon">
+              <MaterialIcon>inventory_2</MaterialIcon>
+            </div>
+            <h3 id="book-packet-confirm-title">Confirm order booking</h3>
+            <p>Are you sure you want to book packets for the current orders?</p>
+            <div className="lionex-orders-modal__actions">
+              <button className="lionex-button lionex-button--secondary" type="button" onClick={cancelBookPacket}>
+                Cancel
+              </button>
+              <button className="lionex-button lionex-button--primary" type="button" onClick={confirmBookPacket}>
+                <MaterialIcon>check</MaterialIcon>
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <Footer />
     </div>

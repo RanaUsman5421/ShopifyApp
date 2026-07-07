@@ -273,7 +273,6 @@ export default function SyncStatus() {
                 <Icon className={syncing ? "lionex-spin" : ""}>sync</Icon>
                 {syncing ? "Synchronizing..." : "Manual Re-sync"}
               </button>
-              <button type="button">View Topology</button>
             </div>
           </article>
           <article className="lionex-next-sync">

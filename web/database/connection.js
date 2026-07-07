@@ -34,7 +34,7 @@ export async function connectToMongoDB() {
       connected: true,
       error: null,
     };
-    return client.db(DB_NAME);
+    return DB_NAME ? client.db(DB_NAME) : client.db();
   } catch (error) {
     mongoClientPromise = null;
     mongoConnectionState = {

@@ -6,7 +6,7 @@ export default function OrdersTable({
   toggleOrderSelection,
   toggleAllOrders,
 }) {
-  const filterTabs = ["All", "Unfulfilled", "Unpaid", "Open", "Closed"];
+  const filterTabs = ["All", "Unfulfilled", "Fullfilled", "Errored", "New"];
 
   const getPaymentStatusBadge = (status) => {
     const statusConfig = {

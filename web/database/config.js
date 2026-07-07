@@ -1,5 +1,5 @@
-export const DB_URL = process.env.MONGODB_URI || "mongodb://foodzyAdmin:7Fm7KQh5dtbkhyrG@ac-ur8drbm-shard-00-00.f0puutl.mongodb.net:27017,ac-ur8drbm-shard-00-01.f0puutl.mongodb.net:27017,ac-ur8drbm-shard-00-02.f0puutl.mongodb.net:27017/ShopifyDb?ssl=true&replicaSet=atlas-pgwnqm-shard-0&authSource=admin&appName=Cluster0";
-export const DB_NAME = process.env.DB_NAME || "ShopifyDb";
-export const ORDERS_COLLECTION = "Orders";
+export const DB_URL = process.env.MONGODB_URI || "mongodb://LionEx:edace9553b@31.220.54.51:27017/lionex-db-created-by-RajaSab?authSource=admin&replicaSet=rs0";
+export const DB_NAME = process.env.DB_NAME || new URL(DB_URL).pathname.replace(/^\/+/, "") || undefined;
+export const ORDERS_COLLECTION = "ShopifyOrders";
 export const INSTALLED_SHOPS_COLLECTION = "InstalledShops";
 export const AGENDA_JOBS_COLLECTION = "AgendaJobs";

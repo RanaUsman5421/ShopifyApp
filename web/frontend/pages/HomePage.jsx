@@ -207,6 +207,7 @@ export default function LionExHomePage() {
           "";
         const storeDomain = storeInfoResponse.data?.myshopifyDomain || urlStore || "";
         const allOrders = Array.isArray(ordersResponse?.data) ? ordersResponse.data : [];
+        console.log("📦 All Orders Fetched from Shopify Store:", allOrders);
         const shopifyOrderCount = Number(ordersResponse?.count) || allOrders.length;
         const productCount =
           productsResponse?.count ?? productsResponse?.data?.count ?? 0;
@@ -227,6 +228,7 @@ export default function LionExHomePage() {
               ? storedOrdersResponse.data.orders.length
               : 0;
             savedOrders = storedOrdersCount;
+            console.log("💾 Stored Orders in Database:", storedOrdersResponse.data?.orders);
           }
         } 
 
@@ -336,6 +338,8 @@ export default function LionExHomePage() {
   const storeDisplayName = dashboardStats.isLoading
     ? "Loading..."
     : dashboardStats.storeName || "Store unavailable";
+  const orderCompletionPercentage = syncCompletionPercentage;
+  const orderCompletionStrokeOffset = 226 - (226 * orderCompletionPercentage) / 100;
 
   const orderSyncActivityItems = [
     {
@@ -481,7 +485,7 @@ export default function LionExHomePage() {
                     <strong>In Progress...</strong>
                   </div>
                   <div className="lionex-progress__track">
-                    <span />
+                    <span style={{ width: `${orderCompletionPercentage}%` }} />
                   </div>
                 </div>
 
@@ -519,9 +523,9 @@ export default function LionExHomePage() {
                   <div className="lionex-efficiency__circle">
                     <svg viewBox="0 0 88 88" aria-hidden="true">
                       <circle cx="44" cy="44" r="36" />
-                      <circle cx="44" cy="44" r="36" />
+                      <circle cx="44" cy="44" r="36" style={{ strokeDashoffset: orderCompletionStrokeOffset }} />
                     </svg>
-                    <strong>80%</strong>
+                    <strong>{orderCompletionPercentage}%</strong>
                   </div>
                   <p>Orders Booking Rate</p>
                 </div>

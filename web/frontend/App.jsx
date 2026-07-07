@@ -26,7 +26,7 @@ export default function App() {
 
 function AppContent({ pages }) {
   const location = useLocation();
-  const shelllessRoutes = ["/", "/homepage", "/orders", "/linkStore", "/syncstatus", "/configuration"];
+  const shelllessRoutes = ["/", "/homepage", "/orders", "/linkStore", "/syncstatus"];
   const isShelllessRoute = shelllessRoutes.includes(location.pathname.toLowerCase());
 
   return (

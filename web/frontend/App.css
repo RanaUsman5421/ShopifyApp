@@ -4074,3 +4074,55 @@ a.active {
         flex-wrap: wrap;
     }
 }
+
+.lionex-orders-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(15, 23, 42, 0.42);
+}
+
+.lionex-orders-modal {
+    width: min(100%, 420px);
+    border: 1px solid var(--lionex-outline-variant);
+    border-radius: 8px;
+    background: var(--lionex-surface-container-lowest);
+    box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+    padding: 24px;
+    color: var(--lionex-on-surface);
+}
+
+.lionex-orders-modal__icon {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--lionex-primary-fixed);
+    color: var(--lionex-primary);
+    margin-bottom: 16px;
+}
+
+.lionex-orders-modal h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+}
+
+.lionex-orders-modal p {
+    margin: 8px 0 0;
+    color: var(--lionex-on-surface-variant);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.lionex-orders-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}

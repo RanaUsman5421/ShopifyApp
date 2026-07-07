@@ -86,9 +86,6 @@ export default function LionExTopBar({
           </button>
         </div>
         <div className="lionex-divider" />
-        <NavLink to="/configuration"  className="lionex-button lionex-button--secondary" type="button">
-          Settings
-        </NavLink>
         <SyncButton>Sync Now</SyncButton>
       </div>
     </header>

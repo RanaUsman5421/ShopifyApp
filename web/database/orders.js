@@ -1,18 +1,52 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import { ObjectId } from "mongodb";
 
 import { ORDERS_COLLECTION } from "./config.js";
 import { connectToMongoDB } from "./connection.js";
 
-function mapOrderForMongo(order) {
+function normalizeOrderLineItemWeight(item) {
+  const value = item?.weight ?? item?.variant?.weight ?? null;
+  const numericValue = Number(value);
+
+  return {
+    weight: Number.isFinite(numericValue) ? numericValue : null,
+    weightUnit: item?.weightUnit || item?.variant?.weightUnit || "kg",
+  };
+}
+function mapOrderForMongo(order, userName = null) {
   const address =
     order.shipping_address ||
     order.billing_address ||
     order.customer?.default_address ||
     {};
 
+  // Safely extract lineItems with weight information
+  const lineItems = Array.isArray(order?.lineItems)
+    ? order.lineItems.map((item) => {
+        const itemWeight = normalizeOrderLineItemWeight(item);
+
+        return {
+          id: item?.id || null,
+          title: item?.title || null,
+          quantity: item?.quantity || 0,
+          weight: itemWeight.weight,
+          weightUnit: itemWeight.weightUnit,
+          variant: item?.variant
+            ? {
+                id: item.variant.id || null,
+                sku: item.variant.sku || null,
+                title: item.variant.title || null,
+                weight: itemWeight.weight,
+                weightUnit: itemWeight.weightUnit,
+              }
+            : null,
+        };
+      })
+    : [];
+
   return {
     shopifyOrderId: Number(order.id),
+    userName,
     adminGraphqlApiId: order.admin_graphql_api_id || null,
     orderName: order.name || null,
     orderNumber: order.order_number ?? null,
@@ -37,6 +71,7 @@ function mapOrderForMongo(order) {
     itemCount: order.item_count ?? null,
     totalPrice: order.total_price || null,
     currency: order.currency || null,
+    lineItems: lineItems,
     createdAt: order.created_at ? new Date(order.created_at) : null,
     updatedAt: order.updated_at ? new Date(order.updated_at) : null,
   };
@@ -103,6 +138,18 @@ function comparableIndexSpec(index) {
   });
 }
 
+function isMongoNamespaceMissingError(error) {
+  return (
+    error?.code === 26 ||
+    error?.codeName === "NamespaceNotFound" ||
+    String(error?.message || "").includes("ns does not exist")
+  );
+}
+
+function isMongoIndexMissingError(error) {
+  return error?.code === 27 || error?.codeName === "IndexNotFound";
+}
+
 function getStoreLookupFilters(storeName, shopDomain) {
   const filters = [];
 
@@ -127,15 +174,46 @@ async function findStoreDocument(db, storeName, shopDomain) {
   return db.collection("stores").findOne(filters.length === 1 ? filters[0] : { $or: filters });
 }
 
+async function getLinkedStoreUserName(db, store) {
+  if (!store?.dashboardUserId) {
+    return null;
+  }
+
+  const dashboardUserId =
+    typeof store.dashboardUserId === "string" && ObjectId.isValid(store.dashboardUserId)
+      ? new ObjectId(store.dashboardUserId)
+      : store.dashboardUserId;
+  const user = await db
+    .collection("DashboardUsers")
+    .findOne({ _id: dashboardUserId }, { projection: { username: 1 } });
+
+  return user?.username || null;
+}
+
 async function ensureOrderIndexes(collection) {
-  const existingIndexes = await collection.indexes();
+  let existingIndexes = [];
+
+  try {
+    existingIndexes = await collection.indexes();
+  } catch (error) {
+    if (!isMongoNamespaceMissingError(error)) {
+      throw error;
+    }
+  }
+
   const existingByName = new Map(existingIndexes.map((index) => [index.name, index]));
 
   for (const index of ORDER_INDEXES) {
     const existingIndex = existingByName.get(index.name);
 
     if (existingIndex && comparableIndexSpec(existingIndex) !== comparableIndexSpec(index)) {
-      await collection.dropIndex(index.name);
+      try {
+        await collection.dropIndex(index.name);
+      } catch (error) {
+        if (!isMongoIndexMissingError(error) && !isMongoNamespaceMissingError(error)) {
+          throw error;
+        }
+      }
     }
   }
 
@@ -176,17 +254,17 @@ export async function saveOrdersToMongoDB(orders, storeIdentity) {
     return emptySaveResult();
   }
 
-  const mappedOrders = orders
-    .filter((order) => order?.id && Number.isFinite(Number(order.id)))
-    .map((order) => mapOrderForMongo(order));
+  const validOrders = orders.filter((order) => order?.id && Number.isFinite(Number(order.id)));
 
-  if (mappedOrders.length === 0) {
+  if (validOrders.length === 0) {
     return emptySaveResult();
   }
 
   const db = await connectToMongoDB();
   const collection = db.collection(ORDERS_COLLECTION);
   const store = await findStoreDocument(db, normalizedStoreName, normalizedShopDomain);
+  const userName = await getLinkedStoreUserName(db, store);
+  const mappedOrders = validOrders.map((order) => mapOrderForMongo(order, userName));
   const now = new Date();
 
   await ensureOrderIndexes(collection);
@@ -196,15 +274,13 @@ export async function saveOrdersToMongoDB(orders, storeIdentity) {
       updateOne: {
         filter: buildOrderFilter(order, store, normalizedShopDomain, normalizedStoreName),
         update: {
-          $set: {
+          $setOnInsert: {
             ...order,
             storeId: store?._id || null,
             dashboardUserId: store?.dashboardUserId || null,
             storeName: normalizedStoreName,
             ...(normalizedShopDomain ? { shopDomain: normalizedShopDomain } : {}),
             syncedAt: now,
-          },
-          $setOnInsert: {
             insertedAt: now,
           },
         },
