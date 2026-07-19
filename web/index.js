@@ -1437,7 +1437,13 @@ app.put("/api/dashboard/store-settings", async (req, res) => {
       { returnDocument: "after" }
     );
 
-    if (!result.value) {
+    // If findOneAndUpdate didn't return a value (rare race or driver behavior), try a direct lookup
+    let storeDoc = result && result.value ? result.value : null;
+    if (!storeDoc) {
+      storeDoc = await db.collection("stores").findOne({ shopDomain });
+    }
+
+    if (!storeDoc) {
       return res.status(404).send({
         success: false,
         error: "Store not found.",
@@ -1445,7 +1451,7 @@ app.put("/api/dashboard/store-settings", async (req, res) => {
     }
 
     // Return updated settings (check both field names)
-    const updatedSettings = result.value.ShopifyStoreSettings || result.value.settings || {};
+    const updatedSettings = storeDoc.ShopifyStoreSettings || storeDoc.settings || {};
 
     return res.status(200).send({
       success: true,

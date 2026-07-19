@@ -114,10 +114,16 @@ export default function Configuration() {
     Number(draftSettings.defaultWeight) > 0;
 
   function updateSetting(key, value) {
-    setDraftSettings((currentSettings) => ({
-      ...currentSettings,
-      [key]: value,
-    }));
+    setDraftSettings((currentSettings) => {
+      const nextSettings = { ...currentSettings, [key]: value };
+      if (key === "defaultCourier") {
+        const services = SERVICE_OPTIONS_BY_COURIER[value] || ["Overnight"];
+        if (!services.includes(nextSettings.defaultService)) {
+          nextSettings.defaultService = services[0];
+        }
+      }
+      return nextSettings;
+    });
     setMessage("");
   }
 
