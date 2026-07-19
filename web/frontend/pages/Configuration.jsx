@@ -196,6 +196,7 @@ export default function Configuration() {
                 justifyContent: "space-between",
                 alignItems: "flex-start",
                 gap: "16px",
+                marginTop: "60px",
                 marginBottom: "24px",
               }}
             >
