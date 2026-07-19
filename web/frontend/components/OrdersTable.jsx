@@ -100,9 +100,6 @@ export default function OrdersTable({
                 Customer
               </th>
               <th className="p-space-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
-                Payment status
-              </th>
-              <th className="p-space-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
                 Fulfillment status
               </th>
               <th className="p-space-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
@@ -132,15 +129,6 @@ export default function OrdersTable({
                 </td>
                 <td className="p-space-4 font-body-md text-body-md text-on-surface">
                   {order.customer}
-                </td>
-                <td className="p-space-4">
-                  <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-full ${getPaymentStatusBadge(
-                      order.paymentStatus
-                    ).bg} ${getPaymentStatusBadge(order.paymentStatus).text} font-label-sm text-label-sm`}
-                  >
-                    {order.paymentStatus}
-                  </span>
                 </td>
                 <td className="p-space-4">
                   <span

@@ -2657,6 +2657,18 @@ a.active {
     white-space: nowrap;
 }
 
+.lionex-orders-pill--wrap {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    max-width: 100%;
+}
+
+.lionex-orders-pill--booking-error {
+    background: #fde8e8;
+    border-radius: 5px;
+}
+
 .lionex-orders-pill--paid {
     background: var(--lionex-secondary-container);
     color: var(--lionex-on-secondary-container);

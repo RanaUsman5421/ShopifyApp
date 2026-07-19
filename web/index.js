@@ -1302,6 +1302,170 @@ app.post(
   }
 });
 
+app.get("/api/dashboard/store-settings", async (req, res) => {
+  try {
+    const shopDomain = normalizeShopDomain(
+      typeof req.query?.shopDomain === "string" ? req.query.shopDomain.trim() : ""
+    );
+
+    if (!shopDomain) {
+      return res.status(400).send({
+        success: false,
+        error: "shopDomain query parameter is required.",
+      });
+    }
+
+    const db = await connectToMongoDB();
+    const store = await db.collection("stores").findOne({ shopDomain });
+
+    if (!store) {
+      return res.status(200).send({
+        success: true,
+        settings: {
+          defaultCourier: "M&P",
+          defaultWeight: "0.5",
+          orderBooking: "Auto",
+          defaultService: "Overnight",
+        },
+      });
+    }
+
+    // Check both field names for backward compatibility
+    const storeSettings = store.ShopifyStoreSettings || store.settings || {};
+
+    return res.status(200).send({
+      success: true,
+      settings: {
+        defaultCourier: storeSettings.defaultCourier || "M&P",
+        defaultWeight: storeSettings.defaultWeight || "0.5",
+        orderBooking: storeSettings.orderBooking || "Auto",
+        defaultService: storeSettings.defaultService || "Overnight",
+      },
+    });
+  } catch (error) {
+    console.error("Dashboard store settings fetch error:", error);
+    return res.status(500).send({
+      success: false,
+      error: error?.message || "Failed to fetch store settings.",
+    });
+  }
+});
+
+app.put("/api/dashboard/store-settings", async (req, res) => {
+  try {
+    const shopDomain = normalizeShopDomain(
+      typeof req.query?.shopDomain === "string" ? req.query.shopDomain.trim() : ""
+    );
+
+    if (!shopDomain) {
+      return res.status(400).send({
+        success: false,
+        error: "shopDomain query parameter is required.",
+      });
+    }
+
+    const { defaultCourier, defaultWeight, orderBooking, defaultService } = req.body || {};
+
+    // Validate courier
+    const validCouriers = ["M&P", "Leopards", "BarqRaftaar", "Trax"];
+    if (defaultCourier && !validCouriers.includes(defaultCourier)) {
+      return res.status(400).send({
+        success: false,
+        error: "Invalid courier selected.",
+      });
+    }
+
+    // Validate service based on courier
+    const validServicesByCourer = {
+      "M&P": ["Overnight", "SecondDay"],
+      "Leopards": ["Overnight", "Detain", "Overland"],
+      "BarqRaftaar": ["Overnight", "Detain", "Overland"],
+      "Trax": ["Overnight", "Detain", "Overland"],
+    };
+
+    if (defaultService) {
+      const selectedCourier = defaultCourier || "M&P";
+      const validServices = validServicesByCourer[selectedCourier] || ["Overnight"];
+      if (!validServices.includes(defaultService)) {
+        return res.status(400).send({
+          success: false,
+          error: `Invalid service for ${selectedCourier}. Valid options: ${validServices.join(", ")}`,
+        });
+      }
+    }
+
+    // Validate weight
+    if (defaultWeight) {
+      const weight = String(defaultWeight || "").trim();
+      if (!/^\d+(\.\d{1,2})?$/.test(weight) || Number(weight) <= 0) {
+        return res.status(400).send({
+          success: false,
+          error: "Invalid weight value. Must be a positive number up to 2 decimal places.",
+        });
+      }
+    }
+
+    // Validate booking mode
+    const validBookingModes = ["Auto", "Manual"];
+    if (orderBooking && !validBookingModes.includes(orderBooking)) {
+      return res.status(400).send({
+        success: false,
+        error: "Invalid booking mode. Must be 'Auto' or 'Manual'.",
+      });
+    }
+
+    const db = await connectToMongoDB();
+    const updateData = {};
+
+    // Update using ShopifyStoreSettings field name (matching the linking code)
+    if (defaultCourier) updateData["ShopifyStoreSettings.defaultCourier"] = defaultCourier;
+    if (defaultWeight) updateData["ShopifyStoreSettings.defaultWeight"] = String(defaultWeight);
+    if (orderBooking) updateData["ShopifyStoreSettings.orderBooking"] = orderBooking;
+    if (defaultService) updateData["ShopifyStoreSettings.defaultService"] = defaultService;
+
+    // Also update settings field for backend compatibility
+    if (defaultCourier) updateData["settings.defaultCourier"] = defaultCourier;
+    if (defaultWeight) updateData["settings.defaultWeight"] = String(defaultWeight);
+    if (orderBooking) updateData["settings.orderBooking"] = orderBooking;
+    if (defaultService) updateData["settings.defaultService"] = defaultService;
+
+    const result = await db.collection("stores").findOneAndUpdate(
+      { shopDomain },
+      { 
+        $set: updateData,
+      },
+      { returnDocument: "after" }
+    );
+
+    if (!result.value) {
+      return res.status(404).send({
+        success: false,
+        error: "Store not found.",
+      });
+    }
+
+    // Return updated settings (check both field names)
+    const updatedSettings = result.value.ShopifyStoreSettings || result.value.settings || {};
+
+    return res.status(200).send({
+      success: true,
+      message: "Store settings updated successfully.",
+      settings: {
+        defaultCourier: updatedSettings.defaultCourier || "M&P",
+        defaultWeight: updatedSettings.defaultWeight || "0.5",
+        orderBooking: updatedSettings.orderBooking || "Auto",
+        defaultService: updatedSettings.defaultService || "Overnight",
+      },
+    });
+  } catch (error) {
+    console.error("Dashboard store settings update error:", error);
+    return res.status(500).send({
+      success: false,
+      error: error?.message || "Failed to update store settings.",
+    });
+  }
+});
+
 app.get("/api/orders/store", async (req, res) => {
   try {
     const storeName =

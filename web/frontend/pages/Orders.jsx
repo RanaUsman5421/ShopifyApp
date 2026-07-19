@@ -88,6 +88,18 @@ function displayStatus(status, fallback = "Unknown") {
     .join(" ");
 }
 
+function getVisibleFulfillmentLabel(order) {
+  const bookingError = String(order.bookingError || order.booking_error || "").trim();
+
+  if (bookingError) {
+    return bookingError;
+  }
+
+  const fulfillmentStatus = getFulfillmentStatus(order);
+
+  return fulfillmentStatus ? displayStatus(fulfillmentStatus) : "Unknown";
+}
+
 function formatOrderDate(dateString) {
   if (!dateString) {
     return "-";
@@ -247,7 +259,7 @@ function matchesTab(order, selectedTab) {
       (fulfillment.includes("unfulfilled") || !fulfillment)
     );
   }
-
+  
   return true;
 }
 
@@ -474,7 +486,7 @@ export default function LionExOrdersPage() {
   }
 
   const bookingLabel =
-    bookingState === "booking" ? "Booking..." : bookingState === "finished" ? "Booked" : "Book Packet";
+    bookingState === "booking" ? "Booking..." : bookingState === "finished" ? "Booked" : "Book Orders";
   const bookingIcon = bookingState === "booking" ? "sync" : bookingState === "finished" ? "check" : "inventory_2";
   return (
     <div className="lionex-orders-page">
@@ -546,7 +558,6 @@ export default function LionExOrdersPage() {
                       <th>Order</th>
                       <th>Date</th>
                       <th>Customer</th>
-                      <th>Payment status</th>
                       <th>Fulfillment status</th>
                       <th>Total</th>
                     </tr>
@@ -557,6 +568,7 @@ export default function LionExOrdersPage() {
                       const orderKey = String(order.id || order.shopifyOrderId || getOrderName(order));
                       const paymentStatus = getPaymentStatus(order);
                       const fulfillmentStatus = getFulfillmentStatus(order);
+                      const bookingError = String(order.bookingError || order.booking_error || "").trim();
 
                       return (
                         <tr key={orderKey}>
@@ -572,17 +584,12 @@ export default function LionExOrdersPage() {
                           <td>{formatOrderDate(getCreatedAt(order))}</td>
                           <td className="lionex-orders-customer">{getCustomerName(order)}</td>
                           <td>
-                            <span className={`lionex-orders-pill lionex-orders-pill--${paymentTone(paymentStatus)}`}>
-                              {displayStatus(paymentStatus)}
-                            </span>
-                          </td>
-                          <td>
                             <span
                               className={`lionex-orders-pill lionex-orders-pill--${fulfillmentTone(
                                 fulfillmentStatus
-                              )}`}
+                              )}${bookingError ? " lionex-orders-pill--wrap lionex-orders-pill--booking-error" : ""}`}
                             >
-                              {displayStatus(fulfillmentStatus)}
+                              {getVisibleFulfillmentLabel(order)}
                             </span>
                           </td>
                           <td>{getOrderTotal(order)}</td>

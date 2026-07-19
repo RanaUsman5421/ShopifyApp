@@ -382,7 +382,6 @@ function Products() {
                       <th>Order</th>
                       <th>Date</th>
                       <th>Customer</th>
-                      <th>Payment status</th>
                       <th>Fulfillment status</th>
                       <th>Items</th>
                       <th>Total</th>
@@ -414,7 +413,7 @@ function Products() {
                           </td>
                           <td>
                             <span className={`status-pill ${statusPill(order.fulfillment_status)}`}>
-                              {order.fulfillment_status || "Unknown"}
+                              {getVisibleFulfillmentLabel(order)}
                             </span>
                           </td>
                           <td>{order.item_count || "—"}</td>
